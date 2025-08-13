@@ -1,0 +1,857 @@
+---
+title: "Quarto Cheatsheet"
+format: html
+---
+
+# Quarto Cheatsheet (LLM‑friendly)
+
+Version: Quarto 1.7 (Updated 2025‑07)
+
+This cheatsheet converts the human‑oriented Quarto PDF into a compact, copy‑pastable guide for LLM prompts and automation. Citations point back to the official PDF.
+
+------------------------------------------------------------------------
+
+## 1) Core ideas
+
+-   **Source**: `.qmd` (or Jupyter notebook). **Output**: HTML/PDF/Word/Presentations/Websites/Books. \[PDF p.1 header, p.1 “Write…/Generate…”\]\
+-   **Render pipeline**: (1) **Run code** with **knitr** (for `{r}`) or **Jupyter** (for others), then (2) **Pandoc** converts Markdown to the requested format. \[PDF p.1 “Behind the scenes”\]
+-   **Editors**: RStudio, VS Code (+ Quarto ext), Positron, or any text editor. \[PDF p.1\]
+-   **Projects**: A dir of `.qmd` + `_quarto.yml`. Create from CLI or IDE. \[PDF p.1\]
+-   **Publish**: `quarto publish {venue}`; venues include `quarto-pub`, `connect`, `gh-pages`, `netlify`, `confluence`. \[PDF p.1\]
+
+## 2) CLI commands
+
+``` bash
+# Render (all formats defined in YAML)
+quarto render path/to/file.qmd
+
+# Render a specific format
+quarto render path/to/file.qmd --to pdf
+
+# Live preview while editing
+quarto preview path/to/file.qmd
+
+# Create a project (types: default, website, blog, book, confluence, manuscript)
+quarto create project {type}
+
+# Publish (venues: quarto-pub, connect, gh-pages, netlify, confluence)
+quarto publish {venue} path/to/file.qmd
+```
+
+\[PDF p.1: render/preview/publish; project types/venues\]
+
+## 3) Minimal document
+
+``` markdown
+---
+title: "My Document"
+format: html
+---
+
+# Hello
+Some prose.
+```
+
+\[PDF p.1 examples\]
+
+## 4) Multi‑format document (HTML + PDF) with global + per‑format options
+
+``` yaml
+---
+title: "My Document"
+toc: true                   # global applies to all formats
+format:
+  html:
+    code-fold: true
+  pdf: default
+---
+```
+
+\[PDF p.2 “Set Format and Options / Multiple Formats”\]
+
+## 5) Code cells & execution
+
+-   **Cell fences**: start with `{language} …` and end with \`\`\`\
+-   **Options** are added via `#|` comments in the cell or globally in YAML under `execute:`
+-   Common **execution options** (default → effect):
+    -   `echo: true` → `false` hides code
+    -   `eval: true` → `false` skips running
+    -   `include: true` → `false` omits code/results
+    -   `output: true` → `false` omits results
+    -   `asis: false` → `true` treats results as raw Markdown
+    -   `warning: true` → `false` hides warnings
+    -   `error: false` → `true` keeps going after errors and shows them
+-   **Global**:
+
+``` yaml
+---
+execute:
+  echo: false
+---
+```
+
+-   **Per‑cell**:
+
+``` python
+#| label: load-data
+#| echo: false
+import pandas as pd
+```
+
+\[PDF p.2 “CODE CELLS”, “EXECUTION OPTIONS”\]
+
+## 6) Figures
+
+``` python
+#| label: fig-scatter
+#| fig-cap: "Scatter of X vs Y"
+#| fig-alt: "Dots showing relation between X and Y"
+# (plot code here)
+```
+
+Key figure options: `fig-cap`, `fig-alt`, `fig-width`, `fig-height`, `fig-align`, `fig-format`. \[PDF p.2 figures/options table\]
+
+## 7) Tables
+
+**R (Markdown table via knitr):**
+
+``` r
+#| label: tbl-cars
+#| tbl-cap: "Head of cars"
+knitr::kable(head(cars))
+```
+
+**Python (Markdown via pandas → Markdown()):**
+
+``` python
+#| label: tbl-small
+#| tbl-cap: "A small table"
+import pandas as pd
+from IPython.display import Markdown
+df = pd.DataFrame({"A":[1,2],"B":[1,2]})
+Markdown(df.to_markdown(index=False))
+```
+
+Also see R packages: **gt**, **flextable**, **kableExtra**. \[PDF p.2 “TABLES”\]
+
+## 8) Cross‑references
+
+-   **Prefixes**: `fig-` (Figure), `tbl-` (Table), `eq-` (Equation), `sec-` (Section)
+-   **Label** a code cell with `label: prefix-id` or a Markdown element with `{#prefix-id}`
+-   **Reference** with `@prefix-id` in text.\
+    Example: “As shown in @fig-scatter…” [PDF p.2 “CROSS REFERENCES”]
+
+## 9) Citations
+
+``` yaml
+---
+bibliography: references.bib
+---
+```
+
+In text: `[@key]` or `@key`. Build `.bib` from Zotero, DOI, Crossref, DataCite, PubMed. \[PDF p.2 “CITATIONS”\]
+
+## 10) Common document options (by format)
+
+### 10.a) Self‑contained HTML with `embed-resources`
+
+**What it does:** Packages CSS, JS, images, and other assets directly into the HTML file (via `data:` URIs) so the page works offline and has no external dependencies.
+
+**When to use:** Emailing a single file, attaching to tickets, archiving reproducible outputs, or publishing where asset hosting is unreliable.
+
+**YAML (document-level):**
+
+``` yaml
+format:
+  html:
+    embed-resources: true
+```
+
+**YAML (project-level `_quarto.yml`):**
+
+``` yaml
+format:
+  html:
+    embed-resources: true
+```
+
+**Notes:** Increases file size; some complex JS modules were fixed in recent Quarto releases—keep Quarto current; supported for HTML formats including **revealjs**.
+
+*(Put under `format:` → `html:` / `pdf:` / `docx:` unless marked “all”)*
+
+-   **All formats**: `toc`, `toc-depth`, `highlight-style`, `keep-md`, `fig-width`, `fig-height`, `fig-format`, `code-overflow`, `code-tools`, `code-fold`
+-   **HTML / revealjs**: `theme`, `css`, `anchor-sections`, `embed-resources`
+-   **docx / pptx**: `reference-doc`
+-   **PDF / beamer**: `documentclass`, `pdf-engine`, `mainfont`/`monofont`
+-   **Citations**: `cite-method`
+
+Examples:
+
+``` yaml
+format:
+  html:
+    theme: cosmo        # Bootswatch
+    code-tools: true    # add show/hide + download
+  pdf:
+    pdf-engine: xelatex
+    fig-width: 5
+    fig-height: 3
+```
+
+\[PDF p.2 options matrix\]
+
+## 11) Callouts
+
+``` markdown
+::: {.callout-tip}
+## Title
+Helpful text.
+:::
+```
+
+Types: `tip`, `note`, `caution`, `warning`, `important`. \[PDF p.2 “CALLOUTS”\]
+
+## 12) Shortcodes
+
+``` markdown
+{{< include _file.qmd >}}
+{{< embed notebook.ipynb#cell-id >}}
+{{< video video.mp4 >}}
+```
+
+\[PDF p.2 “SHORTCODES”\]
+
+## 13) Typical patterns
+
+## 14) Quarto Books
+
+### Required files & metadata
+
+-   **`_quarto.yml`** with `project: type: book` and a `book:` block (title, author, date, and **`chapters:`** list).\
+-   **`index.qmd` (required)** — home page in HTML builds; place preface/acknowledgements here.\
+-   **Chapter `.qmd` files** — listed in `book: chapters:` (e.g., `intro.qmd`, `summary.qmd`).\
+-   **`references.qmd` (optional)** — renders bibliography if you cite sources.\
+-   **Shared metadata** (optional): `_metadata.yml` files inside subfolders to inherit options; or include extra metadata files via `metadata-files:` in `_quarto.yml`.
+
+**Minimal `_quarto.yml`**
+
+``` yaml
+project:
+  type: book
+
+book:
+  title: "My Book"
+  author: "Jane Doe"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+```
+
+### Rendering steps
+
+1.  From the project root, run `quarto render` (or `quarto render --to pdf` / `--to epub`).\
+2.  **HTML output** builds a website-style book (sidebar, numbered chapters) and **automatically creates a full‑text search index**.\
+3.  **PDF output** is compiled via LaTeX (Pandoc → LaTeX engine). Use `documentclass: book`/`report` or leave defaults.\
+4.  **Cross‑refs** work across chapters (e.g., `@fig-...`, `@sec-...`) when labels follow the standard prefixes.
+
+### Indexing
+
+#### A) HTML book search index (automatic)
+
+-   HTML books/sites include a locally built search index out of the box. You can optionally switch to a hosted Algolia index in `_quarto.yml`.
+
+#### B) Back‑of‑book index for PDF
+
+To add a traditional alphabetical index to the **PDF** build:
+
+``` yaml
+format:
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{makeidx}
+        \makeindex
+    include-after-body:
+      text: |
+        \printindex
+```
+
+Then insert index entries in your chapters where appropriate, using LaTeX’s `\index{...}` command inside your Markdown:
+
+``` markdown
+Markdown\index{Markdown} allows you to write using plain text.
+```
+
+**Notes** - For advanced styling, use `imakeidx` instead of `makeidx` (e.g., multi‑column, in‑TOC index) by swapping the package in `include-in-header`.\
+- Quarto’s PDF engine will run LaTeX enough times to resolve index & bibliography entries.\
+- The HTML format does **not** generate a back‑of‑book index page; use the built‑in search instead.
+
+**E. Create a one‑file (offline) HTML**
+
+``` yaml
+format:
+  html:
+    embed-resources: true
+```
+
+**A. Project skeleton**
+
+``` bash
+quarto create project website
+# or: default | blog | book | confluence | manuscript
+```
+
+***quarto.yml***
+
+``` yaml
+project:
+  type: website
+  output-dir: _site
+format:
+  html:
+    theme: darkly
+```
+
+\[PDF p.1 projects\]
+
+**B. Code‑folding + TOC (HTML)**
+
+``` yaml
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+```
+
+**C. Render all formats defined in YAML**
+
+``` bash
+quarto render mydoc.qmd
+```
+
+**D. Render just PDF**
+
+``` bash
+quarto render mydoc.qmd --to pdf
+```
+
+\[PDF p.1/p.2 commands\]
+
+------------------------------------------------------------------------
+
+## Citations back to the official PDF
+
+-   Header, editors, project & publish venues, CLI: Quarto cheatsheet PDF (Posit, Quarto 1.7, updated 2025‑07).\
+-   Render pipeline (knitr/Jupyter → Pandoc): Quarto cheatsheet PDF.\
+-   Figures/tables/cross‑refs/citations/execution options/callouts/shortcodes/options matrix: Quarto cheatsheet PDF.
+
+(Primary source: https://rstudio.github.io/cheatsheets/quarto.pdf)
+
+## 15) Writing Research Papers (Journals, Templates, Citations; e.g., NEJM)
+
+### If a Quarto journal template already exists
+
+1.  **Find/Install the template** (catalog lives under the `quarto-journals` org):
+
+    ``` bash
+    # in an empty dir (creates starter files)
+    quarto use template quarto-journals/<template-name>
+
+    # or add to an existing project
+    quarto add quarto-journals/<template-name>
+    ```
+
+2.  **Edit** the generated `.qmd` and `_quarto.yml` (metadata like `title`, `author`, `affiliations`, `abstract`, `keywords`).\
+
+3.  **Render** to the required format(s):
+
+    ``` bash
+    quarto render --to pdf      # LaTeX-based PDF
+    quarto render --to docx     # Word
+    quarto render --to html     # Web preview / preprint site
+    ```
+
+4.  For a full manuscript workflow, consider a **manuscript project** (`quarto create project manuscript`) and, if your target uses it, enable **MECA** packaging:
+
+    ``` yaml
+    project:
+      type: manuscript
+    manuscript:
+      meca-bundle: true
+    ```
+
+**How templates work (under the hood)**\
+A Quarto journal template is a small **extension** that contributes defaults and files: - `_extensions/<name>/_extension.yml` — declares formats and default options.\
+- `templates/…` — Pandoc templates (LaTeX/HTML) used to typeset the article.\
+- `csl/…` — a **CSL** file (citation style).\
+- `filters/*.lua` — **Lua filters** to map YAML fields (e.g., authors/affiliations) into the template’s structure.\
+- `template.qmd` — a starter manuscript showing required fields.
+
+------------------------------------------------------------------------
+
+### If no official template exists (example: NEJM)
+
+**A. Word/Docx route (recommended when a journal prefers Word)**\
+1) Add the journal’s **CSL** (e.g., “New England Journal of Medicine” style) to your project, then reference it in YAML:
+
+``` yaml
+csl: csl/new-england-journal-of-medicine.csl
+```
+
+2)  Create a **reference Word document** (`reference-doc`) that encodes headings, captions, table/figure titles, line spacing, etc., and point Quarto to it:\
+
+``` yaml
+format:
+  docx:
+    reference-doc: templates/nejm-reference.docx
+```
+
+3)  Put required front‑matter in YAML (`title`, `author`, `affiliations`, `abstract`, `word-count`, `corresponding-author`, `funding`, `conflicts`, etc.).\
+4)  Render to Word and upload to the journal system:\
+
+``` bash
+quarto render --to docx
+```
+
+**B. LaTeX/PDF route**\
+1) If a suitable LaTeX class/template exists (e.g., community templates on Overleaf), adapt it as a Pandoc **template** and point Quarto to it:
+
+``` yaml
+format:
+  pdf:
+    template: templates/nejm.latex   # customized Pandoc template
+    # or: documentclass: <class> + includes
+    include-in-header: "tex/preamble.tex"
+```
+
+2)  Keep a matching **CSL** for references (still used when rendering LaTeX via Pandoc).\
+3)  Use a **Lua filter** if you need to remap Quarto’s YAML to the template’s author/affiliation markup.
+
+**C. Package your house style as a Quarto extension (repeatable)**\
+Create `_extensions/nejm/_extension.yml`:
+
+``` yaml
+title: NEJM-like Article
+contributes:
+  formats:
+    pdf:
+      template: templates/nejm.latex
+      filters: [ nejm/nejm.lua ]
+    docx:
+      reference-doc: templates/nejm-reference.docx
+      filters: [ nejm/nejm.lua ]
+  project:
+    project:
+      type: manuscript
+```
+
+Add supporting files:
+
+```         
+_extensions/nejm/_extension.yml
+_extensions/nejm/filters/nejm.lua
+_extensions/nejm/templates/nejm.latex
+csl/new-england-journal-of-medicine.csl
+templates/nejm-reference.docx
+template.qmd
+```
+
+Install locally with `quarto add _extensions/nejm` (or publish to GitHub and `quarto add org/nejm`).
+
+------------------------------------------------------------------------
+
+### Sample LLM prompt to generate a journal template
+
+> **Goal:** Create a Quarto **journal extension** named `nejm` for manuscripts targeting an NEJM‑like submission package (Docx primary, PDF secondary).\
+> **Deliverables:**\
+> 1) `_extensions/nejm/_extension.yml` contributing both `docx` (with `reference-doc`) and `pdf` (with `template:`), and registering a Lua filter `nejm/nejm.lua`.\
+> 2) `templates/nejm-reference.docx` with Word styles for Title/Authors/Affiliations/Abstract/Heading 1–3, Figure title, Table title, References.\
+> 3) `csl/new-england-journal-of-medicine.csl`.\
+> 4) `filters/nejm.lua` mapping YAML fields (`author`, `affiliations`, `corresponding-author`, `running-title`, `keywords`, `word-count`) into the Pandoc AST and ensuring numbered **Figures** and **Tables** use journal‑style captions.\
+> 5) `templates/nejm.latex` that respects the same front‑matter variables for the PDF build.\
+> 6) `template.qmd` showing minimal fields and 1 figure, 1 table, and 3 numbered references.\
+> **Constraints:** No external network calls; keep filenames as above; follow Quarto’s cross‑ref syntax (`@fig-…`, `@tbl-…`), use `tbl-cap`/`fig-cap`.\
+> **Output:** a zipped tree that I can place at the project root and run: `quarto add _extensions/nejm` then `quarto render --to docx` and `--to pdf`.
+
+------------------------------------------------------------------------
+
+### Citations & Bibliography with Zotero
+
+**Goal:** clean citations in‑text and a correctly styled reference list (e.g., NEJM).
+
+**Zotero setup** 1. Install **Zotero** + the **Better BibTeX** plugin. 2. In Zotero, create a Collection for the paper. 3. **Export** that Collection as **BibTeX** (`.bib`) with *Keep updated* enabled → save as `refs/library.bib` inside your project. 4. Download the journal’s **CSL** (Citation Style Language) file (e.g., *New England Journal of Medicine*) and place it at `csl/new-england-journal-of-medicine.csl`.
+
+**Project YAML (minimal citations config)**
+
+``` yaml
+# _quarto.yml
+bibliography: refs/library.bib        # one or more .bib files are fine (list accepted)
+csl: csl/new-england-journal-of-medicine.csl
+link-citations: true                  # hyperlinks in text to bibliography entries (HTML/PDF)
+# cite-method: citeproc               # default; explicit here if you like
+```
+
+**Citing in text** - Parenthetical: `[@doe2019]` → (Doe 2019) or numeric per CSL.\
+- Narrative: `@doe2019` → Doe (2019).\
+- With locator: `[@doe2019, p. 42]`.\
+- Multiple: `[@doe2019; @smith2020]`.\
+- Force into bibliography even if not cited:\
+`yaml   nocite: |     @doe2019, @smith2020`
+
+**Bibliography output** - Quarto/Pandoc generates the reference list automatically at the end of the document (or where the template places it).
+
+------------------------------------------------------------------------
+
+### Footnotes / Endnotes
+
+**Markdown footnotes**
+
+``` markdown
+A statement with a footnote.[^note1]
+
+[^note1]: Footnote text appears at the bottom (PDF) or as endnotes/linked notes (HTML).
+```
+
+-   Footnotes work in all formats. In PDF they render as page footnotes; in HTML they appear as linked notes (with back‑links).\
+-   For journal Word workflows, footnotes become Word notes and follow the Word template’s style.
+
+------------------------------------------------------------------------
+
+### Manuscript metadata files (recommendation)
+
+**A single `_quarto.yml` for the paper**
+
+``` yaml
+project:
+  type: manuscript
+
+format:
+  docx:
+    reference-doc: templates/journal-reference.docx
+  pdf:
+    # optionally use a LaTeX template/class here if you also submit PDF
+    # template: templates/journal.latex
+
+bibliography: refs/library.bib
+csl: csl/new-england-journal-of-medicine.csl
+link-citations: true
+
+# Optional: bundle for submission systems that support MECA
+manuscript:
+  meca-bundle: false
+```
+
+**Optional: split author/affiliation metadata into a separate file** Create `manuscript.yml` and include it via `_quarto.yml`:
+
+``` yaml
+# _quarto.yml (add)
+metadata-files: [manuscript.yml]
+```
+
+``` yaml
+# manuscript.yml (authors/affiliations and front-matter)
+title: "Title of the Paper"
+author:
+  - name: "Jane Q. Doe"
+    corresponding: true
+    email: "jane@example.org"
+    affiliations:
+      - id: iuhealth
+        name: Indiana University Health
+      - id: iu
+        name: Indiana University
+  - name: "Harlan A. Nelson"
+affiliations:
+  - id: iuhealth
+    name: Indiana University Health
+  - id: iu
+    name: Indiana University
+abstract: |
+  Short abstract here (250 words max).
+keywords: [EHR, Observational Study, Quarto]
+```
+
+**Tip:** Keep `refs/` and `csl/` under version control; with Better BibTeX’s *Keep updated*, your `.bib` stays current as you add sources.
+
+------------------------------------------------------------------------
+
+### Basic commands (journal workflows)
+
+``` bash
+# Catalog / starter from the curated org
+quarto use template quarto-journals/<template-name>
+
+# Add an extension/template to an existing project
+quarto add quarto-journals/<template-name>
+
+# Create a manuscript project
+quarto create project manuscript
+
+# Render to target formats
+quarto render --to docx
+quarto render --to pdf
+```
+
+## 16) Interactive Quarto Documents (R server vs. Web)
+
+There are two broad ways to add interactivity:
+
+### A) Server‑backed (requires an R engine running)
+
+Use **Shiny for R** inside a Quarto HTML document or site. A running R process handles inputs/reactivity and serves results.
+
+**YAML**
+
+``` yaml
+---
+title: "Interactive (Shiny) Doc"
+format: html
+server: shiny   # runs a Shiny server when you preview/render
+---
+```
+
+**Inline inputs and outputs**
+
+``` markdown
+`r shiny::sliderInput("n", "N", min = 10, max = 1000, value = 100)`
+
+`r shiny::plotOutput("hist")`
+```
+
+**Server code chunk (note the server context)**
+
+``` r
+#| context: server
+output$hist <- renderPlot({
+  hist(rnorm(input$n))
+})
+```
+
+**Run locally**
+
+``` bash
+quarto preview
+```
+
+**Deploy** to a server that can host Shiny (e.g., Posit Connect, Shiny Server).
+
+**Pros**: full R power; works with any R package.\
+**Cons**: you must run/host an R process; needs server resources and connectivity.
+
+------------------------------------------------------------------------
+
+### B) Client‑side (web) — no R engine required
+
+Interactivity runs entirely in the browser. Great for static hosting and email‑friendly artifacts.
+
+1.  **HTML widgets (R → JS)** — e.g., `plotly`, `leaflet`, `DT`, `echarts4r`.
+
+    ``` r
+    # R chunk
+    library(plotly)
+    plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", mode = "markers")
+    ```
+
+    -   Works in plain HTML output. Combine with `embed-resources: true` to make a single self‑contained HTML.
+
+2.  **Observable JavaScript (OJS) cells** — reactive JS notebooks embedded in Quarto.
+
+    ``` ojs
+    viewof n = Inputs.range([10, 1000], {{value: 100, step: 10}})
+    Plot.plot({{ marks: [Plot.dot(d3.range(n), {{x: d => d, y: d => Math.random()}})] }})
+    ```
+
+    -   No R involved; everything runs in the browser.
+
+3.  **R in the browser with webR** — run R code via WebAssembly.
+
+    -   Add the webR Quarto extension to your project, then mark chunks to run client‑side.
+
+    ``` yaml
+    # _quarto.yml
+    filters: [webr]
+    ```
+
+    ``` r
+    #| webr
+    hist(rnorm(200))
+    ```
+
+    -   No server; heavier computations are limited by the browser.
+
+4.  **Shinylive (serverless apps)** — Shiny apps compiled to run client‑side.
+
+    -   Ideal for Python Shiny today; R‑based workflows can often be covered by **webR** + widgets.
+
+**Pros**: static hosting, easy sharing, offline‑capable with `embed-resources`.\
+**Cons**: limited access to native R/OS features; large datasets and heavy models may be slow in the browser.
+
+------------------------------------------------------------------------
+
+### Choosing a path
+
+-   Need any R package / database access / long‑running models → **Server‑backed Shiny**.\
+-   Need a static, portable, easily hosted artifact → **Client‑side** (widgets, OJS, webR, Shinylive).
+
+**Quick patterns**
+
+**Self‑contained interactive HTML (client‑side)**
+
+``` yaml
+format:
+  html:
+    embed-resources: true
+```
+
+**Shiny + Quarto website**
+
+``` yaml
+project:
+  type: website
+format:
+  html:
+    theme: cosmo
+server: shiny
+```
+
+## 17) Research Paper Starter Pack (folders, files, and usage)
+
+**What you get:** a ready-to-render Quarto manuscript scaffold with citations wired up. Drop in your CSL and Word reference template and render to DOCX/PDF.
+
+### Folder layout
+
+```         
+.
+├── _quarto.yml
+├── manuscript.yml
+├── index.qmd
+├── sections/
+│   ├── 01-introduction.qmd
+│   ├── 02-methods.qmd
+│   ├── 03-results.qmd
+│   └── 04-discussion.qmd
+├── refs/
+│   └── library.bib
+├── csl/
+│   └── new-england-journal-of-medicine.csl   # placeholder (replace with real CSL)
+└── templates/
+    └── README.md   # place your journal-reference.docx here
+```
+
+### `_quarto.yml` (minimal)
+
+``` yaml
+project:
+  type: manuscript
+
+metadata-files: [manuscript.yml]
+
+format:
+  docx:
+    reference-doc: templates/journal-reference.docx   # put your styled Word here
+  # pdf:
+  #   template: templates/journal.latex               # optional LaTeX route
+
+bibliography: refs/library.bib
+csl: csl/new-england-journal-of-medicine.csl
+link-citations: true
+# manuscript:
+#   meca-bundle: true                                 # if your submission system requires MECA
+```
+
+### `manuscript.yml` (authors/affiliations & front-matter)
+
+``` yaml
+title: "Title of the Paper"
+author:
+  - name: "Jane Q. Doe"
+    corresponding: true
+    email: "jane@example.org"
+    affiliations: [iuhealth, iu]
+  - name: "Harlan A. Nelson"
+affiliations:
+  iuhealth: "Indiana University Health"
+  iu: "Indiana University"
+abstract: |
+  Short abstract here (≤250 words).
+keywords: [EHR, Observational Study, Quarto]
+```
+
+### `index.qmd`
+
+``` markdown
+---
+title: "{{< meta title >}}"     # comes from manuscript.yml
+format: docx
+---
+
+# Abstract
+{{< meta abstract >}}
+
+# Introduction
+{{< include sections/01-introduction.qmd >}}
+
+# Methods
+{{< include sections/02-methods.qmd >}}
+
+# Results
+{{< include sections/03-results.qmd >}}
+
+# Discussion
+{{< include sections/04-discussion.qmd >}}
+
+# References
+# Generated automatically from refs/library.bib using your CSL
+```
+
+### Example section (e.g., `sections/01-introduction.qmd`)
+
+``` markdown
+Background on the problem and prior literature [@smith2020; @doe2019].
+State your aims.
+```
+
+### `refs/library.bib` (example entries)
+
+``` bibtex
+@article{doe2019,
+  title   = {An Example Study},
+  author  = {Doe, Jane Q. and Roe, Richard},
+  journal = {Journal of Examples},
+  year    = {2019},
+  volume  = {42},
+  number  = {1},
+  pages   = {1--10},
+  doi     = {10.0000/example-doi}
+}
+@article{smith2020,
+  title   = {Another Example},
+  author  = {Smith, Alex},
+  journal = {Examples in Practice},
+  year    = {2020},
+  volume  = {5},
+  pages   = {11--20}
+}
+```
+
+### `csl/new-england-journal-of-medicine.csl`
+
+-   **Placeholder file.** Replace with the real CSL from the Zotero style repository (search for *New England Journal of Medicine*). Save it at the same path and keep the filename.
+
+### `templates/README.md`
+
+-   Put your **journal-reference.docx** here (a Word file that contains the paragraph/heading/caption styles your target journal expects).\
+-   Point `_quarto.yml → format: docx: reference-doc:` at that file.
+
+### Render
+
+``` bash
+quarto render --to docx
+# optional:
+# quarto render --to pdf
+```
