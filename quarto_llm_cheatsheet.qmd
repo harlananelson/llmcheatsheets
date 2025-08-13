@@ -102,6 +102,9 @@ import pandas as pd
 
 ## 6) Figures
 
+![Scatter of X vs Y](images/placeholder.svg){#fig-scatter fig-cap="Scatter of X vs Y"}
+
+
 ``` python
 #| label: fig-scatter
 #| fig-cap: "Scatter of X vs Y"
@@ -214,9 +217,9 @@ Types: `tip`, `note`, `caution`, `warning`, `important`. \[PDF p.2 “CALLOUTS�
 ## 12) Shortcodes
 
 ``` markdown
-{{< include _file.qmd >}}
-{{< embed notebook.ipynb#cell-id >}}
-{{< video video.mp4 >}}
+{{</* include _file.qmd */>}}
+{{</* embed notebook.ipynb#cell-id */>}}
+{{</* video video.mp4 */>}}
 ```
 
 \[PDF p.2 “SHORTCODES”\]
@@ -786,24 +789,24 @@ keywords: [EHR, Observational Study, Quarto]
 
 ``` markdown
 ---
-title: "{{< meta title >}}"     # comes from manuscript.yml
+title: "{{</* meta title */>}}"     # comes from manuscript.yml
 format: docx
 ---
 
 # Abstract
-{{< meta abstract >}}
+{{</* meta abstract */>}}
 
 # Introduction
-{{< include sections/01-introduction.qmd >}}
+{{</* include sections/01-introduction.qmd */>}}
 
 # Methods
-{{< include sections/02-methods.qmd >}}
+{{</* include sections/02-methods.qmd */>}}
 
 # Results
-{{< include sections/03-results.qmd >}}
+{{</* include sections/03-results.qmd */>}}
 
 # Discussion
-{{< include sections/04-discussion.qmd >}}
+{{</* include sections/04-discussion.qmd */>}}
 
 # References
 # Generated automatically from refs/library.bib using your CSL
