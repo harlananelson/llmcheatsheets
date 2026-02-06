@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-QMD="${QMD:-quarto_llm_cheatsheet.qmd}"   # override with: QMD=foo.qmd ./local_quarto_check.sh
+QMD="${QMD:-cheatsheets/quarto_llm_cheatsheet.qmd}"   # override with: QMD=foo.qmd ./local_quarto_check.sh
 
 echo "=== STATE CHECK ==="
 command -v quarto >/dev/null || { echo "Quarto CLI not found. On macOS: brew install --cask quarto"; exit 1; }
