@@ -1,31 +1,54 @@
-# LLM-Friendly Quarto Cheatsheets & Starters
+# LLM Cheatsheets & Reference Library
 
-This repo is a compact set of **LLM-friendly references and templates** for writing Quarto docs (reports, papers, books) and running a **diff-first edit loop** with an LLM.
+Guides, templates, and cheatsheets for working with LLMs on data analysis, Quarto authoring, and Claude Code configuration.
 
-## What’s here
-- `quarto_llm_cheatsheet.qmd` – copy-pastable reference for CLI, YAML, figures/tables, cross-refs, citations, books, interactive docs, and journal workflows.
-- `research-paper-starter-pack/` – a ready-to-render manuscript scaffold (DOCX/PDF; CSL/BibTeX wired).
-- `LLM_USAGE.md` – how to load this repo as context for an LLM and run a **diff-first** editorial loop.
+---
 
-## Quick start
-1. Clone the repo.
-2. Open `LLM_USAGE.md` and follow the “Project instructions” block when starting an LLM session.
-3. For papers, start in `research-paper-starter-pack/`, add your CSL + Word reference doc, then:
-   ```bash
-   quarto render --to docx
-   # optional:
-   # quarto render --to pdf
+## What's Here
 
-Attribution & licenses
-	•	This repo’s documentation is intended for CC BY-SA 4.0 licensing, as it derives concepts/examples from the Quarto cheatsheet published by Posit (Quarto 1.7, updated 2025-07). See LICENSE.
-	•	Any code/workflows in this repo may be licensed under MIT (see LICENSE-CODE).
-	•	Journal CSL files retain their original licenses—keep the headers in each .csl file intact.
+| Directory | Contents |
+|-----------|----------|
+| [`guides/`](guides/) | Claude Code setup guide, Copilot analysis primer, LLM usage patterns |
+| [`skills/`](skills/) | Comprehensive Quarto skill reference (load into an LLM for Quarto help) |
+| [`cheatsheets/`](cheatsheets/) | Rendered Quarto cheatsheet (HTML) |
+| [`templates/`](templates/) | Starter files for CLAUDE.md, settings.local.json, research papers |
+| [`scripts/`](scripts/) | CI helper scripts |
 
-PHI / IRB
+---
 
-Do not commit PHI. Use mock or de-identified data. Keep references in refs/ and styles in csl/ under version control.
+## Quick Start
 
-Links
-	•	Cheatsheet: quarto_llm_cheatsheet.qmd
-	•	Starter: research-paper-starter-pack/
-	•	LLM guide: LLM_USAGE.md
+### New Machine Setup (Claude Code)
+
+1. Install Claude Code and authenticate.
+2. Copy [`templates/claude-md-global.md`](templates/claude-md-global.md) to `~/projects/CLAUDE.md` and fill in your paths.
+3. Copy [`templates/settings-local-project.json`](templates/settings-local-project.json) to each project's `.claude/settings.local.json`.
+4. Full walkthrough: [`guides/claude-code-setup.md`](guides/claude-code-setup.md)
+
+### Copilot / ChatGPT Session
+
+1. Copy the PREAMBLE block from [`guides/copilot-primer.md`](guides/copilot-primer.md).
+2. Paste it as the first message in your chat session.
+3. Attach or paste your txtarchive file as the second message.
+
+### Quarto Help
+
+- **Comprehensive reference:** [`skills/quarto-skill.md`](skills/quarto-skill.md) -- load into Claude Code or paste into an LLM session.
+- **Rendered cheatsheet:** [`cheatsheets/quarto_llm_cheatsheet.html`](cheatsheets/quarto_llm_cheatsheet.html) -- open in a browser.
+- **LLM workflow guide:** [`guides/llm-usage.md`](guides/llm-usage.md) -- diff-first editing patterns and prompt cookbook.
+
+### Research Papers
+
+Start from [`templates/research-paper-starter-pack/`](templates/research-paper-starter-pack/) -- a Quarto manuscript scaffold wired for DOCX/PDF with CSL and BibTeX.
+
+---
+
+## Licenses
+
+- Documentation: CC BY-SA 4.0 (derives from the Quarto cheatsheet by Posit). See [LICENSE](LICENSE).
+- Code and workflows: MIT. See [LICENSE-CODE](LICENSE-CODE).
+- Journal CSL files retain their original licenses.
+
+## PHI
+
+Do not commit PHI. Use mock or de-identified data only.

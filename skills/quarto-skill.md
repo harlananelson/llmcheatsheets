@@ -1,5 +1,7 @@
 # Quarto Document Skill
 
+> **Usage:** Load this file into Claude Code (via CLAUDE.md pointer) or paste into an LLM session for comprehensive Quarto assistance. Covers execution control, journal formatting, cross-references, citations, PDF/HTML configuration, and CLI commands.
+
 Comprehensive reference for creating, rendering, and formatting Quarto documents.
 Emphasizes practical workflows: Jupyter-first rendering, journal formatting, and execution control.
 
