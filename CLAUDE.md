@@ -6,7 +6,7 @@ LLM reference library: guides, skills, cheatsheets, and templates.
 
 ```
 guides/                  # Markdown guides (Claude Code setup, Copilot primer, LLM usage)
-skills/                  # Skill files loaded into LLMs (quarto-skill.md)
+skills/                  # Skill files loaded into LLMs (quarto-skill.md, txtarchive-skill.md)
 cheatsheets/             # Rendered Quarto cheatsheet (.qmd + .html + support files)
 templates/               # Starter files (CLAUDE.md, settings.json, research paper scaffold)
 scripts/                 # CI helper scripts (ci_trigger, ci_logs, ci_tail, ci_wait_and_fetch)
