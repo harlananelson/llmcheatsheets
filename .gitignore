@@ -2,6 +2,7 @@
 *.pdf
 _freeze/
 _site/
+*_files/
 
 # OS
 .DS_Store
