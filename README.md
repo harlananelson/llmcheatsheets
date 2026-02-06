@@ -9,7 +9,7 @@ Guides, templates, and cheatsheets for working with LLMs on data analysis, Quart
 | Directory | Contents |
 |-----------|----------|
 | [`guides/`](guides/) | Claude Code setup guide, Copilot analysis primer, LLM usage patterns |
-| [`skills/`](skills/) | Comprehensive Quarto skill reference (load into an LLM for Quarto help) |
+| [`skills/`](skills/) | Skill references: Quarto authoring, txtarchive workflows (load into an LLM) |
 | [`cheatsheets/`](cheatsheets/) | Rendered Quarto cheatsheet (HTML) |
 | [`templates/`](templates/) | Starter files for CLAUDE.md, settings.local.json, research papers |
 | [`scripts/`](scripts/) | CI helper scripts |
@@ -36,6 +36,11 @@ Guides, templates, and cheatsheets for working with LLMs on data analysis, Quart
 - **Comprehensive reference:** [`skills/quarto-skill.md`](skills/quarto-skill.md) -- load into Claude Code or paste into an LLM session.
 - **Rendered cheatsheet:** [`cheatsheets/quarto_llm_cheatsheet.html`](cheatsheets/quarto_llm_cheatsheet.html) -- open in a browser.
 - **LLM workflow guide:** [`guides/llm-usage.md`](guides/llm-usage.md) -- diff-first editing patterns and prompt cookbook.
+
+### TxtArchive (LLM-Friendly Code Archives)
+
+- **Skill reference:** [`skills/txtarchive-skill.md`](skills/txtarchive-skill.md) -- load into an LLM for help creating, unpacking, and round-tripping notebooks.
+- **Key workflow:** LLM writes plain-text cell markers, `extract-notebooks` produces valid `.ipynb` files.
 
 ### Research Papers
 
