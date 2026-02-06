@@ -292,6 +292,58 @@ link-citations: true
 2. Download the journal's **CSL** from the [Zotero Style Repository](https://www.zotero.org/styles)
 3. Render: `quarto render paper.qmd --to docx`
 
+#### Custom Typst/PDF Route (Recommended for New Templates)
+
+Typst is a modern typesetting system bundled with Quarto (no separate install). Faster compilation, better error messages, and simpler template syntax than LaTeX. Preferred when building a custom template from scratch.
+
+```yaml
+---
+format:
+  typst:
+    papersize: us-letter
+    margin:
+      x: 1in
+      y: 1in
+    mainfont: "Linux Libertine"
+    fontsize: 11pt
+    columns: 1
+    keep-typ: true               # Retain .typ for debugging
+bibliography: refs/library.bib
+csl: csl/target-journal.csl
+citeproc: true                   # Use Pandoc/CSL for citations (not Typst's built-in)
+---
+```
+
+Create a custom Typst format extension:
+
+```bash
+quarto create extension format    # select "typst", provide a name
+```
+
+This generates:
+
+```
+_extensions/myjournal/
+├── _extension.yml          # Format metadata and defaults
+├── typst-template.typ      # Core template function (layout, styles)
+├── typst-show.typ          # Maps Pandoc metadata to template arguments
+├── template.qmd            # Starter document
+└── README.md
+```
+
+Render: `quarto render paper.qmd --to myjournal-typst`
+
+**When to choose Typst over LaTeX:**
+- Building a new custom template (simpler syntax, faster iteration)
+- No existing LaTeX class to reuse
+- Want faster compile times
+- Don't need niche LaTeX packages
+
+**When to stick with LaTeX:**
+- Journal provides a `.cls` or `.sty` file
+- Heavy use of specialized LaTeX packages (e.g., `tikz`, `mhchem`)
+- Existing LaTeX template you want to reuse
+
 #### Custom LaTeX/PDF Route
 
 ```yaml
@@ -747,6 +799,113 @@ Age & Frequency \\ \hline
 \end{tabular}
 ```
 ````
+
+### Typst PDF Output (Alternative to LaTeX)
+
+Typst is a modern typesetting system bundled with Quarto -- no separate TeX installation needed. It produces PDF output with faster compilation, clearer error messages, and a simpler template language than LaTeX.
+
+#### Basic Typst
+
+```yaml
+---
+format:
+  typst:
+    papersize: us-letter
+    margin:
+      x: 1in
+      y: 1in
+    mainfont: "Linux Libertine"
+    fontsize: 11pt
+    number-sections: true
+    toc: true
+    columns: 1
+    keep-typ: true         # Retain intermediate .typ file for debugging
+---
+```
+
+Render: `quarto render doc.qmd --to typst`
+
+#### Typst Fonts
+
+```yaml
+format:
+  typst:
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    font-paths:
+      - fonts/              # Local directory with .ttf/.otf files
+```
+
+Typst searches system fonts by default. Use `font-paths` for bundled fonts.
+
+#### Typst Page Layout
+
+```yaml
+format:
+  typst:
+    papersize: a4
+    margin:
+      top: 2.5cm
+      bottom: 2.5cm
+      left: 2cm
+      right: 2cm
+    columns: 2             # Two-column layout
+```
+
+#### Citations in Typst
+
+Two citation processing options:
+
+```yaml
+# Option A: Pandoc/CSL (recommended -- use your journal's CSL file)
+format:
+  typst: default
+bibliography: refs/library.bib
+csl: csl/target-journal.csl
+citeproc: true
+
+# Option B: Typst's built-in citation system
+format:
+  typst:
+    bibliographystyle: apa
+bibliography: refs.bib
+```
+
+Use Option A (Pandoc/CSL) when you need a specific journal citation style.
+
+#### Raw Typst in Document Body
+
+````markdown
+```{=typst}
+#table(
+  columns: 2,
+  [*Age*], [*Frequency*],
+  [18--25], [15],
+  [26--35], [33],
+)
+```
+````
+
+#### Custom Typst Format (Extension)
+
+```bash
+quarto create extension format    # select "typst"
+```
+
+Generates `_extensions/name/` with `typst-template.typ` (layout) and `typst-show.typ` (metadata mapping). Package as a Quarto extension for reuse across papers.
+
+#### LaTeX vs Typst Decision Guide
+
+| Factor | LaTeX (`pdf`) | Typst (`typst`) |
+|--------|---------------|-----------------|
+| Install | Requires TeX distribution | Bundled with Quarto |
+| Compile speed | Slower (multiple passes) | Fast (single pass, Rust) |
+| Error messages | Cryptic | Clear, with line numbers |
+| Template syntax | Complex (`.cls`/`.sty`) | Simple (`.typ` functions) |
+| Package ecosystem | Massive (CTAN) | Growing, smaller |
+| Math typesetting | Excellent | Good, improving |
+| Journal `.cls` files | Use LaTeX | Use Typst |
+| New custom templates | Consider Typst | Preferred |
 
 ---
 
