@@ -1,133 +1,118 @@
-# Using This Repository with an LLM (for Quarto authoring & review)
+# Using This Repository with an LLM
 
-This public repository is designed to be **project information for an LLM** that helps you **write, edit, and understand Quarto documents** (articles, books, interactive docs, journal submissions). You can paste/link these materials into your LLM session or attach them so the model has immediate, accurate context.
+This repository provides context files, references, and templates for LLM-assisted work across multiple tools.
 
-------------------------------------------------------------------------
+---
 
-## What’s inside (intended for LLM context)
+## Which Tool, Which Approach
 
--   **Quarto LLM‑friendly Cheatsheet** – a compact reference for CLI, YAML, execution options, figures, tables, cross‑refs, citations, shortcodes, books, interactive docs, and journal workflows.
--   **Research Paper Starter Pack** – a ready‑to‑render manuscript scaffold (folders for `refs/`, `csl/`, `templates/`, `sections/`) wired for DOCX/PDF and CSL/BibTeX citations.
--   **How‑tos** – sections on Quarto Books, Journal Templates (e.g., NEJM), Zotero + footnotes/bibliography, and interactive documents (R‑server vs. browser‑only).
+| Tool | Setup |
+|------|-------|
+| **Claude Code** (CLI) | Uses `CLAUDE.md` files automatically. See [claude-code-setup.md](claude-code-setup.md). |
+| **Copilot / ChatGPT** (chat) | Paste the preamble from [copilot-primer.md](copilot-primer.md), then paste your code or txtarchive. |
+| **Any LLM** (general) | Attach or paste the relevant files from this repo as context. Follow the diff-first workflow below. |
 
-> Tip: Keep this repo **cohesive and minimal** so the LLM can scan it quickly. Link out to large datasets instead of committing them.
+---
 
-------------------------------------------------------------------------
+## What's Inside (Intended for LLM Context)
 
-## How to use this repo with an LLM
+- **Quarto skill reference** ([`skills/quarto-skill.md`](../skills/quarto-skill.md)) -- comprehensive Quarto authoring guide. Load this when you need help with rendering, formatting, cross-refs, or journal workflows.
+- **Quarto cheatsheet** ([`cheatsheets/quarto_llm_cheatsheet.qmd`](../cheatsheets/quarto_llm_cheatsheet.qmd)) -- compact rendered reference covering core Quarto syntax.
+- **Research paper starter pack** ([`templates/research-paper-starter-pack/`](../templates/research-paper-starter-pack/)) -- manuscript scaffold wired for DOCX/PDF and CSL/BibTeX.
+- **Claude Code templates** ([`templates/`](../templates/)) -- starter `CLAUDE.md` and `settings.local.json` files.
 
-1.  **Attach or link** the files the LLM should rely on (cheatsheet, starter pack, your `.qmd` files, `_quarto.yml`, `manuscript.yml`, `refs/*.bib`, `csl/*.csl`).\
-2.  **Tell the LLM to prioritize repo content** over web results, and to cite official Quarto docs for anything not found here.\
-3.  When asking for edits, **name the file(s)** and the **exact change** you want. Prefer an **edit‑loop** with diffs (see below).\
-4.  **Render locally** with `quarto render` to validate output. Never assume the LLM’s output compiles until you render.
+---
 
-------------------------------------------------------------------------
+## "Project Instructions" to Paste at the Start of an LLM Session
 
-## “Project instructions” you can paste at the start of an LLM session
+Copy this block into the system or first user message.
 
-Copy this into the system or first user message, then attach/link this repo.
-
-``` text
-You are my Quarto assistant. Use ONLY the files in this repository plus official Quarto docs if needed.
-Rules for edits:
-- Maintain valid YAML and Pandoc/Quarto syntax.
-- Prefer minimal diffs and show a unified diff for each change.
-- Preserve semantics, labels, and cross-references; do not break @fig-*, @tbl-*, or section anchors.
-- For citations, use my bibliography (.bib) and CSL; never invent references.
-- For journal workflows, follow my templates/reference-doc and only change styles if I ask.
-- When referencing features, cite the specific Quarto docs page/section.
-- Assume Quarto >= 1.7.
+```text
+You are assisting with data analysis and document authoring.
+Rules:
+- Use ONLY the attached files plus official documentation if needed.
+- For R code: use tidymodels (not caret), pacman::p_load(), event_level = "second".
+- For Quarto: maintain valid YAML and Pandoc syntax. Assume Quarto >= 1.7.
+- Preserve cross-references (@fig-*, @tbl-*, @sec-*) and citation keys (@citekey).
+- Never invent references -- use only citations from the provided .bib file.
+- Prefer minimal diffs. Show a unified diff for each change.
 Output format for edits:
-1) Short rationale (1–3 bullets)
+1) Short rationale (1-3 bullets)
 2) Unified diff
-3) The updated file content (ONLY if I ask for full content)
+3) Full updated file content ONLY if I request it
 ```
 
-------------------------------------------------------------------------
+---
 
-## Prompt cookbook (examples)
+## Prompt Cookbook
 
-### General editing
+### General Editing (Quarto)
 
--   “Open `index.qmd` and add a callout ‘Limitations’ after the Discussion; show a unified diff.”
--   “In `_quarto.yml`, enable `embed-resources` for HTML and add a dark theme; keep PDF unchanged.”
+- "In `_quarto.yml`, enable `embed-resources` for HTML and add a dark theme; keep PDF unchanged."
+- "Add a callout 'Limitations' after the Discussion section; show a unified diff."
 
-### Research paper (NEJM‑like)
+### Data Analysis (R / tidymodels)
 
--   “Use `csl/new-england-journal-of-medicine.csl` and ensure `link-citations: true`. Convert raw references in `sections/02-methods.qmd` into proper citekeys using `refs/library.bib`.”
--   “Create a `templates/journal-reference.docx` style map and adjust headings per standard IMRAD structure.”
+- "Review the recipe in 310-Baseline.ipynb. Are there any preprocessing steps missing for a random forest?"
+- "Add SHAP variable importance plots to 320-Tuned-RF.ipynb using kernelshap + shapviz."
+- "Create a Table 1 using gtsummary::tbl_summary(), stratified by death_flag."
 
-### Books
+### Research Paper
 
--   “Create `_quarto.yml` with `project: type: book`, list chapters in `book: chapters:`, and add cross‑refs and a PDF index.”
+- "Use `csl/new-england-journal-of-medicine.csl` and convert raw references into proper citekeys using `refs/library.bib`."
+- "Create a `templates/journal-reference.docx` style map and adjust headings per IMRAD structure."
 
 ### Interactivity
 
--   “Turn `analysis.qmd` into a browser‑only interactive doc: replace R plots with Plotly or OJS cells; make the HTML self‑contained with `embed-resources: true`.”
--   “Convert `report.qmd` to Shiny (server‑backed): add `server: shiny`, a slider input, and rendered plot chunk; show the diff.”
+- "Turn `analysis.qmd` into a browser-only interactive doc with Plotly; make it self-contained."
+- "Convert `report.qmd` to Shiny: add `server: shiny`, a slider input, and rendered plot."
 
 ### Citations & Zotero
 
--   “Wire Zotero via Better BibTeX: assume `refs/library.bib` is kept updated. Replace author‑year mentions with `@citekey` syntax and add any missing entries.”
+- "Wire Zotero via Better BibTeX: assume `refs/library.bib` is kept updated. Replace author-year mentions with `@citekey` syntax."
 
-------------------------------------------------------------------------
+---
 
-## Edit workflow (diff‑first)
+## Edit Workflow (Diff-First)
 
-1.  **You**: request a change (file + intent).\
-2.  **LLM**: returns a **unified diff** (plus a brief rationale).\
-3.  **You**: approve or refine.\
-4.  **LLM**: provides the updated file content (or you apply the diff).\
-5.  **You**: run `quarto render` locally and commit.
+1. **You**: request a change (file + intent).
+2. **LLM**: returns a **unified diff** (plus a brief rationale).
+3. **You**: approve or refine.
+4. **LLM**: provides the updated file content (or you apply the diff).
+5. **You**: render locally and commit.
 
 > This keeps changes auditable and reduces the chance of the LLM silently breaking something.
 
-------------------------------------------------------------------------
+---
 
-## Conventions this repo expects
+## Conventions
 
--   Quarto version **\>= 1.7**.\
--   Prefer **DOCX** submissions with a `reference-doc`, plus **PDF** for visual checking.\
--   **Citations**: CSL + `.bib`, with `link-citations: true`.\
--   **Labels**: `fig-`, `tbl-`, `eq-`, `sec-` prefixes; cite with `@label`.\
--   **Interactivity**: choose **Shiny** (server) *or* **web (widgets/OJS/webR)** and document which one you use.\
--   **Accessibility**: add `fig-alt` text and meaningful `tbl-cap` captions.
+- Quarto version >= 1.7.
+- **Citations**: CSL + `.bib`, with `link-citations: true`.
+- **Labels**: `fig-`, `tbl-`, `eq-`, `sec-` prefixes; reference with `@label`.
+- **R code**: tidymodels ecosystem, `event_level = "second"`, `pacman::p_load()`.
+- **Analysis files**: NNN-Description naming (see [copilot-primer.md](copilot-primer.md) for the numbering scheme).
+- **Accessibility**: add `fig-alt` text and meaningful `tbl-cap` captions.
 
-------------------------------------------------------------------------
+---
 
-## Limitations & responsibilities
+## Repository Layout
 
--   LLMs can **hallucinate** syntax or options. Validate with `quarto render` + preview.\
--   For clinical/PHI content, **do not commit sensitive data**. Keep the repo clean and use mock or de‑identified examples.\
--   If you change journals, update the **CSL** and **reference‑doc** and re‑render.
-
-------------------------------------------------------------------------
-
-## Repository layout (suggested)
-
-```         
-docs/        # LLM‑friendly guides (cheatsheet, this file)
-starters/    # ready‑to‑use scaffolds
-paper/       # your active manuscript (index.qmd, sections/, refs/, csl/, templates/)
-extensions/  # custom Quarto extensions (e.g., journal styles, lua filters)
+```
+llmcheatsheets/
+├── guides/                  # This file, Claude Code setup, Copilot primer
+├── skills/                  # Quarto skill reference
+├── cheatsheets/             # Rendered Quarto cheatsheet (.qmd + .html)
+├── templates/               # Starter files (CLAUDE.md, settings.json, paper scaffold)
+├── scripts/                 # CI helper scripts
+├── .github/workflows/       # GitHub Actions (renders cheatsheet on push)
+└── local_quarto_check.sh    # Local render validation
 ```
 
-(You can adapt to your preferences; keep paths consistent with `_quarto.yml`.)
+---
 
-------------------------------------------------------------------------
+## Limitations & Responsibilities
 
-## License & attribution
-
-Include a LICENSE for this repository. If you reuse journal‑specific CSL or templates, respect their licenses and attribution requirements.
-
-------------------------------------------------------------------------
-
-## Quick start
-
-1.  Clone this repo or copy the **Starter Pack** into a new project.\
-2.  Drop your CSL and Word `reference-doc` into `csl/` and `templates/`.\
-3.  Edit `manuscript.yml`, `index.qmd`, and `sections/*.qmd`.\
-4.  Ask your LLM for targeted edits (diff‑first).\
-5.  `quarto render --to docx` (and `--to pdf` if needed).
-
-Happy writing!
+- LLMs can **hallucinate** syntax or options. Always validate with `quarto render` + preview.
+- For clinical/PHI content, **do not commit sensitive data**. Use mock or de-identified examples.
+- If you change journals, update the CSL and reference-doc and re-render.
