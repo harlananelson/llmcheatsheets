@@ -1,6 +1,11 @@
-changes.diff
-script.sh
-changes.diff
-script.sh
-verify_and_finish.sh
-post_merge_cleanup.sh
+# Quarto
+*.pdf
+_freeze/
+_site/
+
+# OS
+.DS_Store
+
+# Editor
+*.swp
+*~
