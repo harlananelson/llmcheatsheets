@@ -8,8 +8,8 @@ Guides, templates, and cheatsheets for working with LLMs on data analysis, Quart
 
 | Directory | Contents |
 |-----------|----------|
-| [`guides/`](guides/) | Claude Code setup guide, Copilot analysis primer, LLM usage patterns |
-| [`skills/`](skills/) | Skill references: Quarto authoring, txtarchive workflows (load into an LLM) |
+| [`guides/`](guides/) | Claude Code setup guide, Copilot analysis primer, LLM usage patterns, ontology website pattern |
+| [`skills/`](skills/) | Skill references: Quarto authoring, txtarchive workflows, ontology website builder (load into an LLM) |
 | [`cheatsheets/`](cheatsheets/) | Rendered Quarto cheatsheet (HTML) |
 | [`templates/`](templates/) | Starter files for CLAUDE.md, settings.local.json, research papers |
 | [`scripts/`](scripts/) | CI helper scripts |
@@ -41,6 +41,12 @@ Guides, templates, and cheatsheets for working with LLMs on data analysis, Quart
 
 - **Skill reference:** [`skills/txtarchive-skill.md`](skills/txtarchive-skill.md) -- load into an LLM for help creating, unpacking, and round-tripping notebooks.
 - **Key workflow:** LLM writes plain-text cell markers, `extract-notebooks` produces valid `.ipynb` files.
+
+### Ontology-Organized Website (Quarto)
+
+- **Skill reference:** [`skills/quarto-ontology-website-skill.md`](skills/quarto-ontology-website-skill.md) -- load into an LLM to build a typed personal website with Quarto.
+- **Conceptual guide:** [`guides/quarto-ontology-website.md`](guides/quarto-ontology-website.md) -- explains the pattern and how to adapt it.
+- **Key idea:** Every page has a `node-type` in its front matter. Relationships are YAML metadata. Listings auto-generate. Schema variants for developers, researchers, consultants, artists.
 
 ### Research Papers
 

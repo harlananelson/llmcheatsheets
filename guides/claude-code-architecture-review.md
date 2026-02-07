@@ -27,9 +27,20 @@ of a reasoning architecture:
 | Claude Code Layer | Architecture Function | Loaded When |
 |-------------------|-----------------------|-------------|
 | **CLAUDE.md** | Mode selection rules, invariant enforcement policies | Every interaction |
-| **`.claude/context/`** | Constraint library, ontology schema, method decision trees | Every interaction (lower priority) |
-| **memory/** | Evidence catalog, assumption registry, learned benchmarks | MEMORY.md every session; topic files on demand |
+| **`.claude/rules/*.md`** | Constraint library, ontology schema, method decision trees | Every interaction (auto-discovered, all `.md` files including subdirectories) |
+| **memory/** | Evidence catalog, assumption registry, learned benchmarks | MEMORY.md every session (first 200 lines); topic files on demand |
 | **Notebook/output convention** | Processing pipeline template | When producing work products |
+
+### What Claude Code Auto-Loads (verified mechanisms only)
+
+1. `./CLAUDE.md` (or `./.claude/CLAUDE.md`) — project instructions
+2. `./.claude/rules/*.md` — all markdown files, recursively auto-discovered
+3. `~/.claude/CLAUDE.md` — personal user preferences
+4. `./CLAUDE.local.md` — personal project-local preferences
+5. `MEMORY.md` — first 200 lines only
+
+**Warning:** `.claude/context/` is NOT a Claude Code feature. Files placed
+there will not be auto-loaded. Use `.claude/rules/` as the extraction target.
 
 Most projects dump everything into CLAUDE.md. This guide shows how to
 distribute content across layers so that each layer serves a specific
@@ -145,24 +156,29 @@ What are the escalation rules?]
 
 ## 5. Output Convention
 [Required sections, templates, quality standards]
-[Pointers to .claude/context/ for detailed reference material]
+[Pointers to .claude/rules/ for detailed reference material]
 ```
 
 **What does NOT belong here:**
-- Data dictionaries (move to `context/`)
-- Code recipes and patterns (move to `context/`)
-- Checklists and reference tables (move to `context/`)
+- Data dictionaries (move to `rules/`)
+- Code recipes and patterns (move to `rules/`)
+- Checklists and reference tables (move to `rules/`)
 - Learned lessons (move to `memory/`)
 
 **Rule of thumb:** If you'd Ctrl-F for it occasionally rather than
-reading it every time, it belongs in `context/`, not CLAUDE.md.
+reading it every time, it belongs in `rules/`, not CLAUDE.md.
 
-### 3.2 `.claude/context/` — The Knowledge Base
+### 3.2 `.claude/rules/` — The Knowledge Base
 
-Context files are loaded after CLAUDE.md. They hold reference material
-that the LLM needs for specific tasks but not every interaction.
+All `.md` files in `.claude/rules/` (including subdirectories) are
+**auto-discovered and auto-loaded** every session. No import directives
+needed — just drop a markdown file in the directory and it loads. This is
+the correct extraction target for reference material from CLAUDE.md.
 
-**Map each context file to an ontology function:**
+**Important:** `.claude/context/` does NOT exist as a Claude Code feature.
+Files placed there will NOT be auto-loaded. Use `.claude/rules/` only.
+
+**Map each rules file to an ontology function:**
 
 | File | Ontology Function | Contains |
 |------|------------------|----------|
@@ -376,31 +392,31 @@ These gaps appear in almost every project that hasn't done this mapping:
 
 The quickest improvement: separate rules from reference material.
 
-1. Create `.claude/context/` directory
+1. Create `.claude/rules/` directory
 2. Move data dictionaries, code recipes, and checklists from CLAUDE.md
-   to appropriately named context files
+   to appropriately named rules files
 3. Slim CLAUDE.md to ~200-300 lines of decisions and conventions
-4. Add pointers from CLAUDE.md to context files
+4. Add pointers from CLAUDE.md to rules files
 5. Clean stale entries from settings files
 
 **Success criterion:** CLAUDE.md contains only rules that apply to every
-interaction. Reference material is in context files.
+interaction. Reference material is in rules files.
 
 ### Phase 1b: Ontology Scaffolding (4-8 hours)
 
-Create the architectural context files:
+Create the architectural rules files:
 
-6. `context/ontology-schema.md` — node/edge type definitions
-7. `context/domain-constraints.md` — constraint library with durability tags
-8. `context/assumption-registry.md` — known assumptions + template
-9. `context/authority-scoring.md` — deterministic source quality formula
-10. `context/method-decision-tree.md` — approach selection logic
-11. `context/validation-gates.md` — structured review criteria
+6. `rules/ontology-schema.md` — node/edge type definitions
+7. `rules/domain-constraints.md` — constraint library with durability tags
+8. `rules/assumption-registry.md` — known assumptions + template
+9. `rules/authority-scoring.md` — deterministic source quality formula
+10. `rules/method-decision-tree.md` — approach selection logic
+11. `rules/validation-gates.md` — structured review criteria
 12. Add mode selection and LLM boundary sections to CLAUDE.md
 
-**Success criterion:** Every context file maps to a specific ontology
+**Success criterion:** Every rules file maps to a specific ontology
 function. A new contributor can understand the reasoning architecture
-from the context files alone.
+from the rules files alone.
 
 ### Phase 1c: Convention Updates (1-2 hours)
 
@@ -462,7 +478,7 @@ CLAUDE.md (always loaded)
   → Decisions, conventions, priorities
   → Short (200-300 lines)
 
-.claude/context/ (loaded after CLAUDE.md)
+.claude/rules/ (loaded after CLAUDE.md)
   → Reference material, schemas, constraint libraries
   → Loaded automatically but lower priority
 
@@ -476,7 +492,7 @@ memory/ (persistent across sessions)
 | Layer | Contains | Does NOT Contain |
 |-------|----------|------------------|
 | **CLAUDE.md** | Rules, mode selection, invariants | Code blocks, data schemas, checklists |
-| **context/** | Reference material, type definitions | Decision-making rules |
+| **rules/** | Reference material, type definitions | Decision-making rules |
 | **memory/** | Learnings, benchmarks, evidence | Instructions (those go in CLAUDE.md) |
 | **settings** | Permissions (allow/deny) | Instructions |
 
@@ -502,14 +518,14 @@ and proven.
 
 | Question | If No |
 |----------|-------|
-| Is CLAUDE.md under 300 lines? | Extract reference material to `.claude/context/` |
+| Is CLAUDE.md under 300 lines? | Extract reference material to `.claude/rules/` |
 | Does CLAUDE.md define reasoning modes? | Add mode selection section |
 | Is there an explicit LLM boundary? | Add LLM MAY / MAY NOT section |
-| Do you have a constraint library? | Create `context/domain-constraints.md` |
-| Are assumptions tracked? | Create `context/assumption-registry.md` |
-| Is evidence quality scored? | Create `context/authority-scoring.md` |
+| Do you have a constraint library? | Create `rules/domain-constraints.md` |
+| Are assumptions tracked? | Create `rules/assumption-registry.md` |
+| Is evidence quality scored? | Create `rules/authority-scoring.md` |
 | Do outputs follow a pipeline structure? | Define section convention mapping to INGEST→OUTPUT |
-| Are validation criteria typed? | Restructure checklist in `context/validation-gates.md` |
+| Are validation criteria typed? | Restructure checklist in `rules/validation-gates.md` |
 | Is memory structured? | Organize into MEMORY.md + topic files |
 | Can you walk through your hardest decision? | Your ontology is missing components — add them |
 
