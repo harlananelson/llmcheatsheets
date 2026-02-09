@@ -271,17 +271,19 @@ Beyond `settings.local.json`, the `.claude/` directory can hold additional conte
 project/.claude/
 ├── settings.local.json       # permissions
 ├── CLAUDE.md                 # alternative location for project context
-└── context/                  # additional context files (optional)
+└── rules/                    # additional context files (auto-discovered)
     ├── data-dictionary.md
     └── coding-standards.md
 ```
 
-Files in `.claude/context/` are loaded as additional context when Claude Code runs in the project.
+All `.md` files in `.claude/rules/` (including subdirectories) are **auto-discovered and auto-loaded** every session. No import directives needed -- just drop a markdown file in the directory and it loads.
+
+**Note:** `.claude/context/` is NOT a Claude Code feature. Files placed there will not be auto-loaded. Use `.claude/rules/` as the extraction target.
 
 ### When to Use It
 
 - **Small projects:** A root `CLAUDE.md` is sufficient.
-- **Large projects with extensive context:** Use `.claude/context/` to split context into focused files (data dictionary, domain glossary, review checklist) so the main CLAUDE.md stays concise.
+- **Large projects with extensive context:** Use `.claude/rules/` to split context into focused files (data dictionary, domain glossary, review checklist) so the main CLAUDE.md stays concise.
 
 ---
 
