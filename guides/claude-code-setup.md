@@ -280,6 +280,27 @@ All `.md` files in `.claude/rules/` (including subdirectories) are **auto-discov
 
 **Note:** `.claude/context/` is NOT a Claude Code feature. Files placed there will not be auto-loaded. Use `.claude/rules/` as the extraction target.
 
+### Private Content Warning
+
+Some rules files contain content that should NOT be committed to version control:
+
+- **Career/workplace context** (manager names, org dynamics, personal goals)
+- **Proprietary data dictionaries** (internal table names, column schemas, system details)
+- **Domain constraints with trade secrets** (internal thresholds, business logic)
+
+Add private rules files to `.gitignore`:
+
+```gitignore
+# Private Claude Code context
+.claude/rules/career.md
+.claude/rules/proprietary-*.md
+.claude/settings.local.json
+```
+
+The `settings.local.json` file is local by convention (the `local` in the name means "don't commit") and should always be in `.gitignore`.
+
+**Rule of thumb:** If the content would be inappropriate in a public README, it shouldn't be committed as a rules file either. Claude loads it the same way regardless of whether it's tracked by git.
+
 ### When to Use It
 
 - **Small projects:** A root `CLAUDE.md` is sufficient.
