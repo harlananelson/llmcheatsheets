@@ -58,6 +58,16 @@ As the project matures, extract reference material from CLAUDE.md into `.claude/
 
 **Rule of thumb:** If you'd Ctrl-F for it rather than reading it every time, it belongs in `rules/`, not CLAUDE.md.
 
+**Private content:** Some rules files (career context, proprietary data dictionaries, org-specific constraints) should NOT be committed. Add them to `.gitignore`:
+
+```gitignore
+.claude/rules/career.md
+.claude/rules/proprietary-*.md
+.claude/settings.local.json
+```
+
+See [`guides/claude-code-setup.md` Section 5](guides/claude-code-setup.md) for details on what to keep private.
+
 ### Step 5: Verify
 
 ```bash
