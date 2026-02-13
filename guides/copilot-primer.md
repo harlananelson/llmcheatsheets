@@ -132,16 +132,16 @@ When responding:
 
 ## Customizing the Preamble
 
-The preamble above is generic enough for most clinical data analysis projects. To customize for a specific project, add a short addendum after the preamble:
+The preamble above is generic enough for most data analysis projects. To customize for a specific project, add a short addendum after the preamble:
 
 ```text
 === PROJECT-SPECIFIC CONTEXT ===
 
-Project: SCD Mortality Prediction
-Outcome: death_flag (binary, 1 = died within 365 days)
-Key predictors: age, hgb_baseline, voc_count_12mo, hydroxyurea_flag, ckd_flag
-Current file: 320-Tuned-RF.ipynb (iteration on 310-Baseline-RF)
-Known issue: hgb_baseline has 12% missingness -- impute with median
+Project: Customer Churn Prediction
+Outcome: churned (binary, 1 = no active subscription after 90 days)
+Key predictors: tenure_months, login_frequency, support_tickets, plan_tier, usage_score
+Current file: 320-Tuned-RF.ipynb (iteration on 310-Baseline-LR)
+Known issue: usage_score has 8% missingness -- impute with median
 ```
 
 ---

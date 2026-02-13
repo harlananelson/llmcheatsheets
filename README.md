@@ -83,7 +83,7 @@ claude
 |---------|-----------|---------------------|
 | `llmcheatsheets/` | Minimal | Short CLAUDE.md, no rules, CI only |
 | `lhn/` | Medium | Knowledge graph navigation, YAML ontology, domain entry points |
-| `SCDCernerProject/` | Full | 10 rules files, mode selection, validation gates, assumption registry, LLM boundary |
+| Knowledge Vault (see [guide](guides/knowledge-vault.md)) | Full | 5 rules files, mode selection, authority scoring, agent operations, LLM boundary |
 
 ---
 
@@ -193,7 +193,7 @@ Start from [`templates/research-paper-starter-pack/`](templates/research-paper-s
 
 - **Guide:** [`guides/claude-code-architecture-review.md`](guides/claude-code-architecture-review.md) -- maps Claude Code config layers to a typed reasoning architecture.
 - **When to use:** When a project grows beyond a simple CLAUDE.md and needs structured constraints, assumption tracking, validation gates, or mode selection.
-- **Worked example:** `SCDCernerProject/` has a complete implementation with 10 rules files.
+- **Worked example:** The [Knowledge Vault](guides/knowledge-vault.md) demonstrates the full pattern with 5 rules files, mode selection, and LLM boundary.
 
 ---
 

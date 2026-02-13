@@ -146,31 +146,31 @@ See [`templates/claude-md-project.md`](../templates/claude-md-project.md) for a 
 ### Example
 
 ```markdown
-# SCD Mortality Analysis
+# Customer Churn Prediction
 
-Retrospective cohort study of mortality predictors in sickle cell disease
-using EHR data from the OMOP CDM.
+Retrospective cohort study of churn predictors for a SaaS product
+using warehouse data from the analytics database.
 
 ## Data Sources
 
-| Table             | Description               | Key Columns          |
-|-------------------|---------------------------|----------------------|
-| person            | Demographics              | person_id, birth_dt  |
-| condition_era     | Diagnosis episodes        | condition_concept_id |
-| measurement       | Lab results               | value_as_number      |
+| Table             | Description               | Key Columns              |
+|-------------------|---------------------------|--------------------------|
+| users             | Account demographics      | user_id, signup_date     |
+| events            | Product usage events      | event_type, timestamp    |
+| subscriptions     | Billing and plan info     | plan_tier, renewal_date  |
 
 ## Key Outcome
 
-Binary 1-year mortality: `death_flag` (1 = died within 365 days of index).
+Binary 90-day churn: `churned` (1 = no active subscription 90 days after renewal date).
 
 ## Analysis Progression
 
 | File | Description                  |
 |------|------------------------------|
 | 010  | Data extraction and QC       |
-| 110  | EDA: demographics, labs      |
+| 110  | EDA: usage patterns, segments|
 | 210  | Feature engineering          |
-| 310  | Baseline random forest       |
+| 310  | Baseline logistic regression |
 | 320  | Tuned model + SHAP           |
 
 ## Required Packages

@@ -32,7 +32,7 @@ The result is a website that is both human-readable and machine-parseable. The "
 
 ## Where This Comes From
 
-This pattern grew out of work on the [SCDCernerProject](https://github.com/GerardDHills/SCDCernerProject), where we built an ontology schema to organize clinical research reasoning. The Claude Code configuration files (CLAUDE.md, `.claude/rules/`) served as Phase 1 scaffolding for typed knowledge -- constraints, assumptions, validation gates, evidence quality scores.
+This pattern grew out of using Claude Code configuration files as Phase 1 scaffolding for typed knowledge systems -- constraints, assumptions, validation gates, evidence quality scores. The key insight was that `.claude/rules/` files naturally map to components of a domain ontology (see [claude-code-architecture-review.md](claude-code-architecture-review.md)).
 
 The insight: **the same principle of typed, connected knowledge applies to organizing any body of work**, not just clinical research. A personal website is a knowledge graph where the nodes are projects, roles, publications, and skills, and the edges are "uses," "produced-during," "demonstrates."
 

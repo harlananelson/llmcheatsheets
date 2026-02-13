@@ -532,5 +532,6 @@ and proven.
 ---
 
 *This guide is domain-agnostic. For a worked example applying this
-methodology to a clinical SCD research project, see the companion
-gap analysis in the SCDCernerProject repository.*
+methodology to a knowledge vault, see the [Knowledge Vault Guide](knowledge-vault.md).
+The vault scaffold demonstrates the full pattern: slim CLAUDE.md, typed rules
+files, mode selection, LLM boundary, and agent operations.*
