@@ -112,7 +112,12 @@ When working on GitHub issues:
 project/
 ├── CLAUDE.md              # Project-specific context (extends this global)
 ├── .claude/
-│   └── settings.local.json  # Project-specific permissions
+│   ├── settings.local.json  # Project-specific permissions
+│   └── rules/             # Ontology rules files (auto-loaded every session)
+│       ├── ontology-schema.md
+│       ├── domain-constraints.md
+│       ├── assumption-registry.md
+│       └── ...
 ├── paper/                 # Publication-ready analyses
 │   └── {STUDY_NAME}/
 │       ├── 310-Analysis.ipynb
@@ -189,9 +194,44 @@ csl: style.csl
 
 ---
 
+## Project Ontology Architecture
+
+**When setting up a new project**, use the ontology scaffold to organize Claude Code configuration as a typed knowledge system rather than a flat instruction file.
+
+### Bootstrapping a New Project
+
+When asked to "set up the ontology" or "scaffold this project":
+
+1. **Generic templates (start here):** `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
+   - Ready-to-customize templates with `{PLACEHOLDER}` syntax
+   - `CLAUDE.md.template` + 7 rules files (ontology-schema, constraints, assumptions, authority-scoring, method-decision-tree, validation-gates, output-conventions)
+   - See `README.md` in that directory for usage and placeholder reference
+2. **Architecture guide (explains why):** `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
+   - Maps Claude Code layers (CLAUDE.md, `.claude/rules/`, memory/) to ontology functions
+   - Phase 1a-1c roadmap for extraction and scaffolding
+
+### Quick Start Phrase
+
+The user can say any of these to trigger scaffolding:
+- "Set up the ontology for this project"
+- "Scaffold this project"
+- "Use the ontology templates to organize this project"
+
+---
+
+## Halt on Contradiction (Critical)
+
+When a user's request implies something exists (file has content, column is present, service is running) and reality contradicts that (file is empty, column missing, service down): **stop all dependent work immediately**. Do not work around it, guess, or ask soft questions. State clearly what was expected vs. what was found, and wait for the user to resolve the discrepancy. The cost of one clarification round-trip is always less than an entire chain of work built on a false premise. This applies in interactive conversations; in batch workflows, log the contradiction and skip dependent work.
+
+See: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md` → "Halt on Contradiction" for the full protocol.
+
+---
+
 ## Notes
 
 - This file is loaded automatically for all projects under `{PROJECTS_ROOT}`
 - Project-specific CLAUDE.md files add context, they don't replace this
 - When in doubt, check txtarchive README: `{PROJECTS_ROOT}/txtarchive/README.md`
 - Full Quarto reference: `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.md`
+- Ontology templates: `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
+- Architecture guide: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
