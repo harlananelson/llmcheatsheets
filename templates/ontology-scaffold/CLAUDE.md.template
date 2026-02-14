@@ -1,0 +1,120 @@
+# {PROJECT_NAME} — Claude Code Directives
+
+**Domain:** {DOMAIN_DESCRIPTION}
+
+This extends the global `/projects/CLAUDE.md`. Reference material is in
+`.claude/rules/` (auto-loaded every session).
+
+---
+
+## 1. Work Prioritization
+
+**Stakeholder:** {STAKEHOLDER}
+**Task source:** {TASK_SOURCE}
+
+### Priority Rules
+
+1. **{TASK_SOURCE} is source of truth.** Check for open tasks before starting
+   new work.
+2. **Read before write.** Verify current state before making changes.
+3. {PRIORITY_RULE_3}
+4. {PRIORITY_RULE_4}
+
+### Communication Style
+
+{COMMUNICATION_PREFERENCES}
+
+---
+
+## 2. Mode Selection
+
+### Task Classification
+
+- {SYNTHESIS_TRIGGER}
+  → **InformationSynthesis mode**
+  - Ceiling: claims are provisional (for orientation)
+  - Lighter requirements: cite sources, note recency
+
+- {CREATION_TRIGGER}
+  → **Implementation mode**
+  - Required: validation gates, assumption enumeration
+  - Full workflow: verify state → plan → execute → verify
+
+### Escalation Triggers (InformationSynthesis → Implementation)
+
+- User asks to modify anything (create, update, delete)
+- Breaking changes or contradictions discovered
+- {ESCALATION_TRIGGER_3}
+
+### Fail-safe: When uncertain, default to **Implementation** mode.
+
+---
+
+## 3. LLM Boundary
+
+### Claude MAY
+
+- Propose approaches and generate code
+- Interpret outputs, logs, and error messages
+- Suggest configurations and documentation
+- Generate formatted outputs and reports
+
+### Claude SHOULD NOT
+
+- Claim any output is "validated" without human review and gate passage
+- Skip validation gate checks (rules/validation-gates.md is mandatory)
+- Assign authority scores to sources (use deterministic formula in
+  rules/authority-scoring.md)
+- {SHOULD_NOT_ADDITIONAL}
+
+### Claude MUST
+
+- Report deterministic metrics without editorializing on their sufficiency
+- Enumerate assumptions for every claim (from rules/assumption-registry.md)
+- Document decision provenance: `llm_proposed` / `user_directed` /
+  `convention` / `stakeholder_directed`
+- {MUST_ADDITIONAL}
+
+---
+
+## 4. Workflow Convention
+
+### Before Starting Work
+
+1. Check {TASK_SOURCE} for open tasks
+2. Reference task ID in all commits and documentation
+3. {WORKFLOW_STEP_3}
+
+### For Significant Changes
+
+1. Reference task + approach documentation
+2. List constraints applied (from rules/domain-constraints.md)
+3. Enumerate assumptions (from rules/assumption-registry.md)
+4. Run validation gates (rules/validation-gates.md)
+5. {WORKFLOW_STEP_5}
+
+---
+
+## 5. Key Invariants
+
+These MUST be followed regardless of where the full explanation lives:
+
+- {INVARIANT_1}
+- {INVARIANT_2}
+- {INVARIANT_3}
+- {INVARIANT_4}
+- {INVARIANT_5}
+
+---
+
+## 6. Reference Files (auto-loaded from .claude/rules/)
+
+| File | Contents |
+|------|----------|
+| `ontology-schema.md` | Node types, edge types, invariants for {DOMAIN_DESCRIPTION} |
+| `domain-constraints.md` | Platform/domain limits, org policies, conventions |
+| `assumption-registry.md` | Known assumptions about state, access, methods |
+| `authority-scoring.md` | Deterministic formula for scoring information sources |
+| `method-decision-tree.md` | When to use which approach; tool/method selection |
+| `validation-gates.md` | Validation criteria with 6-state gate system |
+| `output-conventions.md` | Required sections and processing pipeline for work products |
