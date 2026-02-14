@@ -198,17 +198,30 @@ csl: style.csl
 
 **When setting up a new project**, use the ontology scaffold to organize Claude Code configuration as a typed knowledge system rather than a flat instruction file.
 
+### Tiered Framework
+
+The architecture supports three levels of depth. Choose based on project needs:
+
+| Level | Purpose | When to Use |
+|-------|---------|-------------|
+| **Level 1** | Organizational reasoning | Project management, workflows, general analysis |
+| **Level 2** | Domain-native ontology | Domain objects ARE the product (knowledge graphs, extraction) |
+| **Level 3** | Multi-agent negotiation | Multiple agents/extractors need reconciliation |
+
+See Section 10 of the architecture guide for the full framework, decision tree, and comparison tables.
+
 ### Bootstrapping a New Project
 
 When asked to "set up the ontology" or "scaffold this project":
 
-1. **Generic templates (start here):** `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
+1. **Generic templates (Level 1 — start here):** `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
    - Ready-to-customize templates with `{PLACEHOLDER}` syntax
    - `CLAUDE.md.template` + 7 rules files (ontology-schema, constraints, assumptions, authority-scoring, method-decision-tree, validation-gates, output-conventions)
    - See `README.md` in that directory for usage and placeholder reference
-2. **Architecture guide (explains why):** `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
+2. **Architecture guide (explains why + tiered framework):** `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
    - Maps Claude Code layers (CLAUDE.md, `.claude/rules/`, memory/) to ontology functions
    - Phase 1a-1c roadmap for extraction and scaffolding
+   - Section 10: Tiered framework — Levels 1/2/3 with decision tree
 
 ### Quick Start Phrase
 
