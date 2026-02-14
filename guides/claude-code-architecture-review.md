@@ -502,6 +502,45 @@ When the mode classifier is uncertain, route to the more rigorous mode.
 The cost of over-reasoning is wasted compute. The cost of under-reasoning
 in a consequential domain is a reasoning failure with real consequences.
 
+### Halt on Contradiction
+
+When the user's request implies something exists (a file has content, a
+variable is defined, a service is running) and reality contradicts that
+expectation (file is empty, variable is missing, service is down), this
+is a **blocking contradiction** — not a minor inconvenience to work around.
+
+**Protocol:**
+
+1. **Detect:** Before acting on any referenced resource, verify it contains
+   what the user's request implies it contains. An empty file when content
+   is expected is a contradiction. A missing column when a query references
+   it is a contradiction.
+2. **Halt:** Stop all dependent work immediately. Do not proceed with
+   assumptions, workarounds, or fallbacks. The user's mental model and
+   reality have diverged — any work built on the wrong model is wasted.
+3. **Report:** State the contradiction clearly and specifically:
+   - What the user expected (inferred from their request)
+   - What was actually found
+   - Why this blocks progress
+4. **Wait:** Do not ask soft questions ("should I continue anyway?").
+   State the problem and wait for the user to resolve the discrepancy.
+
+**This applies in interactive conversations.** In batch/automated workflows
+where the user cannot respond, log the contradiction and skip the dependent
+work rather than guessing.
+
+**Why this is a principle, not a preference:** The cost of halting is one
+round-trip of clarification. The cost of proceeding is an entire chain of
+work built on a false premise — work that must be discarded and redone
+once the contradiction surfaces later (and it always surfaces later).
+
+**Examples:**
+- User says "use the descriptions in report.txt" → file is empty → HALT
+- User says "update the function's error handling" → function has no error
+  handling → HALT (they may mean "add" not "update", or they're looking at
+  a different version)
+- User says "fix the failing test" → test is passing → HALT
+
 ### Convention Before Code
 
 Phase 1 enforces invariants through CLAUDE.md conventions (natural-language
@@ -535,3 +574,26 @@ and proven.
 methodology to a knowledge vault, see the [Knowledge Vault Guide](knowledge-vault.md).
 The vault scaffold demonstrates the full pattern: slim CLAUDE.md, typed rules
 files, mode selection, LLM boundary, and agent operations.*
+
+---
+
+## 10. Generic Templates
+
+Ready-to-use templates for bootstrapping a new project are in
+`templates/ontology-scaffold/`. Copy the templates, replace `{PLACEHOLDERS}`,
+and you have a working Phase 1 scaffold without needing to reverse-engineer
+an existing implementation.
+
+| Template | Target | Purpose |
+|----------|--------|---------|
+| `CLAUDE.md.template` | `CLAUDE.md` | Decision rules (~150 lines) |
+| `rules/ontology-schema.md` | `.claude/rules/` | Node/edge types, invariants |
+| `rules/domain-constraints.md` | `.claude/rules/` | Constraint library with durability ratings |
+| `rules/assumption-registry.md` | `.claude/rules/` | Known assumptions with test methods |
+| `rules/authority-scoring.md` | `.claude/rules/` | Deterministic source quality formula |
+| `rules/method-decision-tree.md` | `.claude/rules/` | Approach selection logic |
+| `rules/validation-gates.md` | `.claude/rules/` | 6-state gate system |
+| `rules/output-conventions.md` | `.claude/rules/` | Processing pipeline section template |
+
+See `templates/ontology-scaffold/README.md` for usage instructions and
+placeholder reference.
