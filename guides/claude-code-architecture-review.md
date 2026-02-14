@@ -570,16 +570,227 @@ and proven.
 
 ---
 
-*This guide is domain-agnostic. For a worked example applying this
-methodology to a knowledge vault, see the [Knowledge Vault Guide](knowledge-vault.md).
-The vault scaffold demonstrates the full pattern: slim CLAUDE.md, typed rules
-files, mode selection, LLM boundary, and agent operations.*
+## 10. Tiered Framework: Three Levels of Ontology Architecture
+
+The generic scaffold described in Sections 1-9 is one way to use this
+methodology, but not the only way. Projects vary in how deeply the ontology
+penetrates the actual work. This section describes three levels, each
+building on the previous.
+
+### Level 1: Organizational Reasoning
+
+**Purpose:** Impose reasoning discipline on project work. The ontology
+organizes how Claude thinks about your domain, but the domain objects
+themselves are outside the ontology.
+
+**Node types:** Generic — Task, Claim, Evidence, Constraint, Assumption,
+Method, Validation, Risk, Resource. These are reasoning primitives that
+apply to any domain.
+
+**Validation model:** 6-state gate system (unvalidated → validated).
+Claims pass through gates before becoming actionable.
+
+**Method selection:** Decision tree routing tasks to approaches. "When
+should I use tool A vs tool B?"
+
+**Output:** Narrative documents with structured sections (Task Reference,
+Constraints Applied, Assumptions, Analysis, Validation, Limitations,
+Provenance).
+
+**When to use Level 1:**
+- Project management and workflow organization
+- Infrastructure and DevOps tooling
+- General-purpose data analysis
+- Any project where the ontology serves the process, not the product
+
+**Examples:**
+- Azure DevOps project (`/projects/azure/`) — organizes API access, repo
+  management, and deployment workflows
+- SCDCernerProject (`/projects/SCDCernerProject/`) — organizes clinical
+  research analysis with R/tidymodels
+
+**Templates:** `templates/ontology-scaffold/` provides ready-to-customize
+files for Level 1.
 
 ---
 
-## 10. Generic Templates
+### Level 2: Domain-Native Ontology
 
-Ready-to-use templates for bootstrapping a new project are in
+**Purpose:** The ontology IS the domain model. Node types are domain
+objects, not abstract reasoning primitives. The `.claude/rules/` files
+define the actual knowledge representation, not just how to think about it.
+
+**Node types:** Domain-specific — replace Task/Claim/Evidence with the
+real entities in your domain. The node types ARE the things you extract,
+discover, or build.
+
+**Validation model:** Empirical metrics replace abstract gates. Instead of
+"did this claim pass Gate 3?", validation is "what is the precision/recall
+of this extractor against a gold standard?" The 6-state model may still
+exist but is secondary to quantitative evaluation.
+
+**Method selection:** Becomes a computational algorithm, not a workflow
+router. Instead of "use tool A when condition B", it's "spawn child agents
+where parent agents found signal, prune branches where they didn't."
+
+**Output:** Structured data (graphs, JSON, typed records) rather than
+narrative documents. The output IS the domain artifact.
+
+**What changes from Level 1:**
+
+| Component | Level 1 | Level 2 |
+|-----------|---------|---------|
+| Node types | Generic reasoning primitives | Domain objects (Concept, Span, Document, Agent) |
+| Edge types | supports/refutes/requires | Domain relations (measurement_of, treatment_for, caused_by) |
+| Constraints | Project policies and platform limits | Domain-specific quality rules (precision over recall, negation awareness) |
+| Assumptions | Access/state/methodological beliefs | Empirical — tested by running the system, not by checking permissions |
+| Authority scoring | Source quality formula | Per-entity confidence scores from the system itself |
+| Validation | Gate passage (6-state) | Gold standard comparison (precision, recall, F1 per entity) |
+| Method tree | Workflow routing | Computational algorithm (hierarchical spawning, pruning) |
+| Output format | Narrative with sections | Structured data (graph, JSON) |
+
+**When to use Level 2:**
+- NLP / information extraction systems
+- Knowledge graph construction
+- Ontology development (where the ontology is the product)
+- Any project where the domain has a formal knowledge representation
+  (UMLS, SNOMED, FHIR, schema.org, etc.)
+
+**Example:** Clinical NLP project (`/projects/clinical-nlp/`) — UMLS
+concepts are the node types, extraction agents are the methods, and
+inter-agent negotiation replaces gate validation.
+
+**Key insight:** At Level 2, you don't need the generic scaffold templates.
+The ontology schema file becomes the domain model, not a reasoning
+framework. You're building the ontology, not using one to organize your
+thinking.
+
+---
+
+### Level 3: Multi-Agent Systems with Negotiation
+
+**Purpose:** Multiple autonomous agents operate on the domain model,
+producing claims that must be reconciled through formal negotiation
+protocols. The architecture defines not just what the agents know, but
+how they interact when they disagree.
+
+**What's new beyond Level 2:**
+
+1. **Agent as first-class node type.** Each agent has identity, scope,
+   performance metrics, and negotiation standing. Agents are not just
+   tools — they are participants with documented capabilities and
+   limitations.
+
+2. **Negotiation protocol.** When agents produce conflicting claims over
+   the same evidence (e.g., two agents claim the same text span), a
+   formal resolution process determines the outcome:
+   - **Dominance:** One agent's claim subsumes another (hierarchy check)
+   - **Relation discovery:** Conflict reveals a relationship between
+     claims (not contradiction, but structure)
+   - **Escalation:** Unresolvable conflicts flagged for human review
+
+3. **Hierarchical spawning.** Agents are not all deployed at once. Parent
+   agents scan first; child agents spawn only where parents found signal.
+   This is a computational scaling strategy:
+   ```
+   Level 0: Broad category agents (10-15 total)
+      ↓ spawn only where parent found something
+   Level 1: Subcategory agents
+      ↓ spawn only where parent found something
+   Level 2: Specific entity agents
+      ↓ spawn only where parent found something
+   Level 3: Leaf-level agents (most specific)
+   ```
+   Without hierarchy: O(N × L) where N = all possible agents.
+   With hierarchy: most branches pruned at Level 0-1.
+
+4. **Negotiation transcript as artifact.** The output includes not just
+   the resolved graph, but the negotiation history: which agents claimed
+   what, how overlaps were resolved, what remains unresolved. This
+   provides interpretability that monolithic systems lack.
+
+5. **Hybrid modes.** Combine hierarchical agents (broad discovery) with
+   focused agents (high-priority precision). Focused agents take priority
+   in negotiation when they overlap with hierarchical agents.
+
+**Rules files at Level 3:**
+
+| File | Level 1 Equivalent | Level 3 Version |
+|------|-------------------|-----------------|
+| `ontology-schema.md` | Generic node/edge types | Domain entities + Agent node type with performance fields |
+| `domain-constraints.md` | Project policies | Domain quality rules (precision over recall, negation awareness, section awareness) |
+| `method-decision-tree.md` | Workflow routing | Agent spawning algorithm with hierarchy pruning |
+| `validation-gates.md` | 6-state gate system | Per-entity metrics + negotiation resolution rates |
+| — (new) | — | `agent-architecture.md` — agent lifecycle, negotiation protocol, scaling strategy |
+| — (new) | — | `domain-reference.md` — external knowledge system integration (UMLS, SNOMED, etc.) |
+
+**When to use Level 3:**
+- Information extraction at scale (clinical NLP, legal document analysis)
+- Multi-model ensembles where outputs must be reconciled
+- Any system where different specialized components operate on the same
+  evidence and may disagree
+
+**Example:** Clinical NLP project (`/projects/clinical-nlp/`) — concept
+agents scan clinical notes in parallel, negotiate overlapping span claims
+using UMLS hierarchy for dominance, and discover relations between
+proximate concepts.
+
+---
+
+### Choosing Your Level
+
+```
+Does your project need reasoning discipline
+for tasks and workflows?
+├── Yes → Level 1 (Organizational Reasoning)
+│         Use templates/ontology-scaffold/
+│
+│   Are domain objects the primary product,
+│   not just the subject of reasoning?
+│   ├── Yes → Level 2 (Domain-Native Ontology)
+│   │         Build ontology-schema.md from domain model
+│   │
+│   │   Do multiple agents/extractors operate on
+│   │   the same evidence and need reconciliation?
+│   │   ├── Yes → Level 3 (Multi-Agent Negotiation)
+│   │   │         Add agent-architecture.md, negotiation protocol
+│   │   └── No → Stay at Level 2
+│   │
+│   └── No → Stay at Level 1
+│
+└── No → You may not need this framework yet
+```
+
+### Progression Between Levels
+
+Levels are not exclusive — a project can use Level 1 for its workflow
+organization while building a Level 2 or 3 system as its product.
+SCDCernerProject uses Level 1 to organize analysis notebooks while the
+clinical-nlp project is building a Level 3 extraction system.
+
+Projects may also evolve between levels:
+- Start at Level 1 to organize initial exploration
+- Promote to Level 2 when domain model becomes the primary artifact
+- Extend to Level 3 when multiple extraction/analysis agents need
+  reconciliation
+
+The generic scaffold (Level 1) is always a valid starting point. You can
+replace generic node types with domain-specific ones as the project
+matures, keeping the `.claude/rules/` structure and progressive disclosure
+architecture intact.
+
+---
+
+*This guide is domain-agnostic at Level 1, and provides the architectural
+framework for Levels 2 and 3. For worked examples: see the
+[Knowledge Vault Guide](knowledge-vault.md) (Level 1), the Azure DevOps
+project (Level 1), SCDCernerProject (Level 1), and clinical-nlp (Level 3).*
+
+---
+
+## 11. Generic Templates (Level 1)
+
+Ready-to-use templates for bootstrapping a Level 1 project are in
 `templates/ontology-scaffold/`. Copy the templates, replace `{PLACEHOLDERS}`,
 and you have a working Phase 1 scaffold without needing to reverse-engineer
 an existing implementation.
