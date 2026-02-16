@@ -193,7 +193,7 @@ Save as a Raw cell in your `.ipynb`:
 ```yaml
 ---
 title: "Analysis 310: Baseline Model"
-author: "Harlan Nelson"
+author: "Your Name"
 date: today
 format:
   html:
@@ -383,8 +383,8 @@ keywords:
   - keyword3
 
 author:
-  - name: Harlan Nelson
-    email: harlan@example.org
+  - name: Your Name
+    email: author@example.org
     orcid: 0000-0000-0000-0000
     corresponding: true
     roles:
@@ -402,20 +402,20 @@ author:
 
 affiliations:
   - id: inst1
-    name: Indiana University Health
+    name: Acme Health System
     department: Department of Research
-    city: Indianapolis
-    state: IN
+    city: Anytown
+    state: NY
     country: US
 
   - id: inst2
-    name: Indiana University
-    city: Indianapolis
-    state: IN
+    name: State University
+    city: Anytown
+    state: NY
     country: US
 
 copyright:
-  holder: Harlan Nelson
+  holder: Your Name
   year: 2026
 license: "CC BY"
 
@@ -1182,7 +1182,7 @@ Raw cell in `.ipynb`:
 ```yaml
 ---
 title: "310 - Baseline Model"
-author: "Harlan Nelson"
+author: "Your Name"
 date: today
 format:
   html:
@@ -1202,7 +1202,7 @@ quarto render 310-Baseline-Model.ipynb
 ---
 title: "Paper Title"
 author:
-  - name: Harlan Nelson
+  - name: Your Name
     corresponding: true
     affiliation:
       - name: Institution Name

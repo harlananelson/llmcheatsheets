@@ -22,7 +22,7 @@ And you want to build it with Quarto (static site generator, no backend needed).
 Most personal sites are flat collections of pages with ad-hoc structure. This pattern adds a type layer:
 
 1. Every page declares a `node-type` in its YAML front matter (`project`, `role`, `writing`, etc.)
-2. Relationships between pages are encoded as metadata fields (`skills: [r, python]`, `role: iuhealth`)
+2. Relationships between pages are encoded as metadata fields (`skills: [r, python]`, `role: acme-health`)
 3. Quarto listings auto-generate index pages from page metadata
 4. A machine-readable schema (`_ontology-schema.yml`) documents the convention
 

@@ -14,7 +14,7 @@ Every content page declares a `node-type` in its YAML front matter. Relationship
 Person (index, about)
   └── has Projects (projects/*.qmd)
         └── uses Skills (skills: [r, python])
-        └── produced-during Role (role: iuhealth)
+        └── produced-during Role (role: acme-health)
   └── held Roles (experience/*.qmd)
         └── requires Skills (skills: [sql, r])
   └── authored Publications (publications.qmd)
@@ -47,7 +47,7 @@ title: "Project Title"
 description: "One-sentence summary for listing cards."
 node-type: project
 status: active          # active | complete | archived
-role: iuhealth          # edge: produced-during → role page
+role: acme-health          # edge: produced-during → role page
 skills: [r, tidymodels, shap]   # edge: uses-skill
 categories: [healthcare-ai]     # Quarto cross-reference
 date: 2024-01-01        # for listing sort order
@@ -107,7 +107,7 @@ node-type: meta
 | Edge | Encoding | Example |
 |------|----------|---------|
 | `uses-skill` | `skills: [r, tidymodels]` in project front matter | Project uses these tools |
-| `produced-during` | `role: iuhealth` in project front matter | Project done during this role |
+| `produced-during` | `role: acme-health` in project front matter | Project done during this role |
 | `demonstrates` | `skills: [statistics]` in publication metadata | Paper demonstrates this expertise |
 | `requires` | `skills: [r, sql]` in role front matter | Role requires these skills |
 | `categorized-as` | `categories: [healthcare-ai]` | Standard Quarto categories |
