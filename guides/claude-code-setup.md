@@ -338,7 +338,238 @@ The `<encoded-path>` is derived from your working directory. For example, workin
 
 ---
 
-## 7) New Machine Setup Checklist
+## 7) Custom Skills (`SKILL.md`)
+
+Skills teach Claude how to do something specific to your work. When you ask Claude something that matches a skill's purpose, it automatically applies the skill's instructions.
+
+### How Skills Work
+
+- Claude pre-loads only the **name and description** of every installed skill at startup (~100 tokens each)
+- Full instructions load only when Claude determines the skill is relevant (**progressive disclosure**)
+- You can have dozens of skills without bloating context
+
+### Skill Locations
+
+| Location | Scope | Shared? |
+|----------|-------|---------|
+| `~/.claude/skills/skill-name/SKILL.md` | User-level (all projects) | No (personal) |
+| `.claude/skills/skill-name/SKILL.md` | Project-level | Yes (committed to repo) |
+
+### SKILL.md Format
+
+Every skill file starts with YAML frontmatter:
+
+```yaml
+---
+name: commit-messages
+description: Generate commit messages following our team's conventions. Use when creating commits or when the user asks for help with commit messages.
+---
+```
+
+The **description is critical** -- Claude uses it to decide when to auto-apply the skill. Be specific about trigger conditions.
+
+Below the frontmatter, write the actual instructions in Markdown.
+
+### Example: Code Review Skill
+
+```markdown
+---
+name: code-review-standards
+description: Apply our team's code review standards when reviewing PRs or suggesting improvements. Use when reviewing code, discussing best practices, or when the user asks for feedback on implementation.
+---
+
+# Code Review Standards
+
+All reviews should check:
+1. Error handling covers edge cases
+2. Functions have clear single responsibilities
+3. No hardcoded credentials or secrets
+4. Tests cover the happy path and at least one error path
+
+Format: `type(scope): description` (under 50 characters)
+```
+
+### Supporting Files
+
+If you have extensive reference material, put it in a separate file in the skill folder and reference it from SKILL.md. Claude reads supporting files only when needed:
+
+```
+~/.claude/skills/quarto/
+├── SKILL.md              # Quick reference + pointer to full docs
+└── references/
+    └── full-reference.md  # Comprehensive guide (read on demand)
+```
+
+### Skills Beyond Code
+
+Skills aren't limited to code patterns. Use them for anything you repeatedly explain:
+- Database query patterns specific to your schema
+- API documentation formats your organization uses
+- Meeting notes templates
+- Clinical data conventions
+- Analysis review checklists
+
+### Managing Skills
+
+```bash
+# See what skills Claude has loaded
+# Ask Claude: "What skills do you have available?"
+
+# Or check settings → capabilities → skills
+```
+
+---
+
+## 8) Custom Subagents (`agents/`)
+
+Subagents are separate Claude instances with their own context window, system prompt, and tool permissions. They operate independently and return a summary to the main conversation.
+
+### Why Subagents Matter
+
+- Context degradation happens around 45% of your context window
+- Subagents get a **fresh** context for their specific task
+- Main agent only holds the summary, keeping the main conversation clean
+- Prevents the context pollution that kills long coding sessions
+
+### Built-In Subagents
+
+| Agent | Purpose | Tools |
+|-------|---------|-------|
+| **Explore** | Fast, read-only codebase search and analysis | Read, Grep, Glob |
+| **Plan** | Research agent for gathering context before architectural decisions | Read, Grep, Glob |
+| **General-purpose** | Complex, multi-step tasks requiring exploration and action | All tools |
+
+### Creating Custom Subagents
+
+Add a Markdown file to `~/.claude/agents/` (user-level) or `.claude/agents/` (project-level, shared with team).
+
+#### Agent File Format
+
+```yaml
+---
+name: security-reviewer
+description: Reviews code for security vulnerabilities. Invoke when checking for auth issues, injection risks, or data exposure.
+tools: Read, Grep, Glob
+---
+```
+
+The `tools` field controls what the subagent can do:
+- **Read-only reviewer**: `Read, Grep, Glob`
+- **Implementation agent**: `Read, Grep, Glob, Write, Edit, Bash`
+
+Below the frontmatter, write the system prompt:
+
+```markdown
+You are a security-focused code reviewer. When analyzing code:
+1. Check for authentication and authorization gaps
+2. Look for injection vulnerabilities (SQL, command, XSS)
+3. Identify sensitive data exposure risks
+4. Flag insecure dependencies
+
+Provide specific file and line references for each finding.
+Categorize by severity: critical, high, medium, low.
+```
+
+### How Subagents Communicate
+
+1. Main agent identifies a task suitable for delegation
+2. Main agent invokes subagent with a specific prompt
+3. Subagent executes in its own context window
+4. Subagent returns a summary of findings/actions
+5. Main agent incorporates the summary and continues
+
+**The summary is the key.** A well-designed subagent returns a concise, structured summary -- not its entire context. This is why the system prompt should be explicit about output format.
+
+### Practical Subagent Patterns
+
+**Large refactoring:** Main agent identifies files, spins up a subagent per logical group. Each handles its scope and returns a summary.
+
+**Code review pipeline:** Run three subagents in parallel (style-checker, security-scanner, test-coverage). Each returns findings in a consistent format; main agent synthesizes into a single review.
+
+**Research tasks:** Delegate to Explore with specific questions. Returns a distilled map of relevant files and patterns, keeping main context clean.
+
+### Constraints
+
+- Subagents **cannot spawn other subagents** (prevents infinite nesting)
+- Each subagent gets its own fresh context window
+- Communication is through the delegation-and-return pattern only
+
+### Example Custom Agents
+
+```
+~/.claude/agents/
+├── phi-reviewer.md       # Scans for PHI exposure (clinical research)
+└── quarto-checker.md     # Validates QMD conventions
+```
+
+---
+
+## 9) MCP Connectors
+
+MCP (Model Context Protocol) is a standardized way for Claude to call external tools and data sources through a unified interface. Instead of switching between GitHub, Slack, databases, and issue trackers, Claude can access all of them directly.
+
+### Adding MCP Connections
+
+```bash
+# HTTP transport (recommended for remote servers)
+claude mcp add --transport http <name> <url>
+
+# With authentication
+claude mcp add --transport http github https://api.github.com/mcp \
+  --header "Authorization: Bearer your-token"
+```
+
+### Via Plugin System
+
+Claude Code plugins bundle MCP servers with skills:
+
+```bash
+# Install a plugin that includes MCP servers
+claude plugin install bio-research@knowledge-work-plugins
+
+# List installed plugins and their MCP connections
+claude plugin list
+```
+
+### Recommended MCP Connections
+
+| Service | Purpose |
+|---------|---------|
+| **GitHub** | Repository management, issues, PRs, code search |
+| **Slack** | Channel history, thread summaries, message search |
+| **Google Drive** | Document access for reference during implementation |
+| **PostgreSQL/databases** | Direct queries without leaving Claude |
+| **Linear/Jira** | Issue tracking integration |
+
+### The Compound Effect
+
+The real power is the combination:
+- **Skill** encodes your conventions (how to do something)
+- **Subagent** handles complex subtasks (isolated context for each)
+- **MCP** connects external services (no context switching)
+
+A workflow that used to require five context switches (check issue tracker, review Slack discussion, look at the design, implement the code, update the ticket) now happens in one continuous session.
+
+### Managing MCP
+
+```bash
+# View current MCP connections
+# Run /mcp in Claude Code
+
+# Check what MCP tools are available
+# Ask Claude: "What MCP tools do you have?"
+```
+
+### Security Note
+
+Third-party MCP servers are not verified by Anthropic. For sensitive integrations:
+- Review the server's source code
+- Use official connectors from service providers when available
+- Be cautious with servers that have write access to production systems
+
+---
+
+## 10) New Machine Setup Checklist
 
 ### Step 1: Install Claude Code
 
@@ -427,6 +658,29 @@ pip install txtarchive
 
 ---
 
+### Step 9: Install Custom Skills
+
+```bash
+# Create skill directories
+mkdir -p ~/.claude/skills/quarto
+mkdir -p ~/.claude/skills/txtarchive
+
+# Copy or create SKILL.md files with YAML frontmatter
+# See Section 7 for the format
+```
+
+### Step 10: Create Custom Agents (Optional)
+
+```bash
+# Create agents directory
+mkdir -p ~/.claude/agents
+
+# Add agent markdown files
+# See Section 8 for the format
+```
+
+---
+
 ## Summary
 
 | What | Where | Purpose |
@@ -435,5 +689,10 @@ pip install txtarchive
 | Project CLAUDE.md | `repo/CLAUDE.md` | Repo-specific context |
 | User-global permissions | `~/.claude/settings.local.json` | Default tool permissions |
 | Project permissions | `repo/.claude/settings.local.json` | Repo-specific permissions |
+| Rules (auto-loaded context) | `repo/.claude/rules/*.md` | Extended project docs |
 | Memory | `~/.claude/projects/*/memory/MEMORY.md` | Persistent cross-session notes |
-| Additional context | `repo/.claude/context/*.md` | Extended project docs |
+| Skills (user) | `~/.claude/skills/name/SKILL.md` | Auto-triggered workflow instructions |
+| Skills (project) | `.claude/skills/name/SKILL.md` | Shared team workflow instructions |
+| Agents (user) | `~/.claude/agents/name.md` | Custom subagents with scoped tools |
+| Agents (project) | `.claude/agents/name.md` | Shared team subagents |
+| MCP connections | `claude mcp add` or plugins | External service integrations |
