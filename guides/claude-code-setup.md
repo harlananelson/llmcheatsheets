@@ -316,10 +316,10 @@ Claude Code maintains a persistent memory across sessions:
 ~/.claude/projects/<encoded-path>/memory/MEMORY.md
 ```
 
-The `<encoded-path>` is derived from your working directory. For example, working from `/home/harlan/projects` produces:
+The `<encoded-path>` is derived from your working directory. For example, working from `/home/user/projects` produces:
 
 ```
-~/.claude/projects/-home-harlan-projects/memory/MEMORY.md
+~/.claude/projects/-home-user-projects/memory/MEMORY.md
 ```
 
 ### How It Works

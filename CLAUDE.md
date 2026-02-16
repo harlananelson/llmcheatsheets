@@ -1,5 +1,17 @@
 # llmcheatsheets
 
+## Repo Visibility: PUBLIC
+
+This is a **public** repository. It must NOT contain:
+- Personal project details or employer-specific information
+- IU Health references (names, emails like hnelson3@iuhealth.org, server names, workspace URLs)
+- Databricks workspace IDs, PAT tokens, or internal infrastructure details
+- Any PHI or clinical data references
+
+All content should be **generic and reusable** by anyone. Use placeholder names (e.g., "Indiana University Health" -> `{INSTITUTION}`, server names -> `{SERVER}`) in templates. Examples should use generic affiliations or clearly fictional ones.
+
+**Sister repo:** `AI` (private) contains employer-specific Claude Code + Databricks guides. Patterns proven there get generalized before landing here.
+
 LLM reference library: guides, skills, cheatsheets, and templates.
 
 ## Repo Structure
