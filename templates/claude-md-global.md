@@ -240,6 +240,27 @@ See: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md` 
 
 ---
 
+## Data Profiling Before Analysis (Critical)
+
+**Principle:** Understanding the data is always the first step before writing analytical code.
+Every failed analysis traces back to an unchecked assumption about data structure, types, or values.
+
+**Before writing any analytical code**, verify:
+
+1. **Schema:** Column names and types match expectations (`class()`, `glimpse()`, `data.info()`)
+2. **Categorical values:** Inspect actual values with counts — never assume types
+3. **Numeric ranges:** Check for plausibility, zeros-as-missing, sentinel values
+4. **Date classes:** Confirm correct class (Date vs character vs IDate)
+5. **Join keys:** Verify type compatibility across tables before joining
+6. **Code fields:** Test regex patterns against actual data before building analysis around them
+
+**When to re-profile:** After type-changing mutations, after joins, after filters, and
+whenever encountering unexpected results.
+
+**Full skill reference:** `{PROJECTS_ROOT}/llmcheatsheets/skills/data-profiling-skill.md`
+
+---
+
 ## Notes
 
 - This file is loaded automatically for all projects under `{PROJECTS_ROOT}`
@@ -248,3 +269,4 @@ See: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md` 
 - Full Quarto reference: `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.md`
 - Ontology templates: `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
 - Architecture guide: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
+- Data profiling skill: `{PROJECTS_ROOT}/llmcheatsheets/skills/data-profiling-skill.md`

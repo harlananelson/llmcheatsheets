@@ -54,6 +54,23 @@ pacman::p_load(
 
 ---
 
+## Data Profiling Protocol
+
+**Before writing any analytical code**, profile every dataset:
+
+1. **Schema:** `glimpse(data)` / `data.info()` — verify column names and types
+2. **Categoricals:** `count(field)` — inspect actual values (never assume types)
+3. **Numerics:** `summary()` — check ranges, zeros, NAs
+4. **Dates:** `class()` + `range()` — confirm correct class
+5. **Join keys:** Verify type compatibility across tables
+6. **Code fields:** Test regex patterns against real data before building analysis
+
+Add a profiling cell as Cell 2 in every notebook (after setup, before analysis).
+
+**Full reference:** See `data-profiling` skill in llmcheatsheets/skills/.
+
+---
+
 ## Review Checklist
 
 Before committing:
