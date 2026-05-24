@@ -1,0 +1,94 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "index.qmd"
+    - "about.qmd"
+    - "guides/*.md"
+    - "skills/*.md"
+    - "skills/*.qmd"
+    - "cheatsheets/*.qmd"
+    - "templates/*.md"
+    - "templates/**/*.md"
+    - "templates/ontology-scaffold/README.md"
+    - "templates/research-paper-starter-pack/README.md"
+    - "!skills/edw-connection-skill.md"
+
+website:
+  title: "GPT Sherpa"
+  description: "Practical patterns for working with LLMs."
+  site-url: "https://gptserpa.com"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Getting started
+        menu:
+          - text: "LLM usage patterns"
+            href: guides/llm-usage.md
+          - text: "GitHub Copilot primer"
+            href: guides/copilot-primer.md
+      - text: Claude Code
+        menu:
+          - text: "Setup"
+            href: guides/claude-code-setup.md
+          - text: "Architecture review"
+            href: guides/claude-code-architecture-review.md
+      - text: Quarto
+        menu:
+          - text: "Authoring skill"
+            href: skills/quarto-skill.qmd
+          - text: "LLM cheatsheet"
+            href: cheatsheets/quarto_llm_cheatsheet.qmd
+          - text: "Ontology website pattern"
+            href: guides/quarto-ontology-website.md
+          - text: "Ontology website skill"
+            href: skills/quarto-ontology-website-skill.md
+      - text: "Skills & patterns"
+        menu:
+          - text: "AskSage review"
+            href: skills/asksage-review-skill.md
+          - text: "Data profiling"
+            href: skills/data-profiling-skill.md
+          - text: "Knowledge vault — pattern"
+            href: guides/knowledge-vault.md
+          - text: "Knowledge vault — skill"
+            href: skills/knowledge-vault-skill.md
+          - text: "PHI scanning"
+            href: skills/phi-scanning-skill.md
+          - text: "Rhino + Shiny"
+            href: skills/rhino-shiny-skill.md
+          - text: "Tidymodels"
+            href: skills/tidymodels-skill.md
+          - text: "txtarchive"
+            href: skills/txtarchive-skill.md
+      - text: Templates
+        menu:
+          - text: "Project CLAUDE.md"
+            href: templates/claude-md-project.md
+          - text: "Global CLAUDE.md"
+            href: templates/claude-md-global.md
+          - text: "Ontology scaffold"
+            href: templates/ontology-scaffold/README.md
+          - text: "Research paper starter"
+            href: templates/research-paper-starter-pack/README.md
+    right:
+      - href: about.qmd
+        text: About
+      - icon: github
+        href: https://github.com/harlananelson/llmcheatsheets
+        aria-label: GitHub source repo
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: false
+    code-copy: true
+    highlight-style: github
+    page-layout: article
+
+execute:
+  enabled: false

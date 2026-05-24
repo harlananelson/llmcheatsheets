@@ -1,0 +1,62 @@
+---
+title: "GPT Sherpa"
+description: "Practical patterns for working with LLMs."
+pagetitle: "GPT Sherpa"
+toc: false
+---
+
+# Practical patterns for working with LLMs
+
+A working data scientist's notebook of patterns that hold up in production:
+how to set up Claude Code, how to write CLAUDE.md control documents that
+make an LLM behave, how to author Quarto documents with LLM help, and a
+small library of templates you can copy.
+
+Not generic LLM hype, not vendor docs — patterns proven on real projects,
+generalized for anyone to reuse.
+
+## Three places to start
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-md-4}
+### New to Claude Code?
+
+The setup guide walks through installing the CLI, configuring permissions,
+and adding your first custom skill.
+
+[Claude Code setup →](guides/claude-code-setup.md)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+### Already running Claude Code?
+
+Make it work better. A `CLAUDE.md` control document is how you teach an
+LLM your project. Start from the template, refine as the project grows.
+
+[CLAUDE.md template →](templates/claude-md-project.md)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+### Authoring with Quarto?
+
+A reference skill that captures Quarto execution control, journal
+formatting, cross-references, citations — and a one-page LLM cheatsheet.
+
+[Quarto authoring skill →](skills/quarto-skill.qmd)
+:::
+
+:::
+
+## What's here
+
+- **Getting started** — what LLM-assisted work looks like; a quick GitHub Copilot primer.
+- **Claude Code** — setup and an opinionated architecture-review pattern for organizing projects with Claude.
+- **Quarto** — authoring skill, an LLM cheatsheet, and the ontology-website pattern.
+- **Skills & patterns** — drop-in skill files for AskSage multi-model review, data profiling, PHI scanning, knowledge vaults, txtarchive, Rhino + Shiny, and tidymodels.
+- **Templates** — project and global `CLAUDE.md` starters, a permissions `settings.local.json`, an ontology project scaffold, and a Quarto research-paper starter pack.
+
+---
+
+*Source: [llmcheatsheets on GitHub](https://github.com/harlananelson/llmcheatsheets) (MIT licensed).
+Sister private repo holds employer-specific material that's generalized before landing here.*

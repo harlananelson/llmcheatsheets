@@ -1,0 +1,39 @@
+---
+title: "About GPT Sherpa"
+pagetitle: "About — GPT Sherpa"
+---
+
+GPT Sherpa is a working data scientist's notebook of LLM patterns, made
+public. It collects the parts that have survived contact with real projects —
+Claude Code setup, project control documents (`CLAUDE.md`), Quarto authoring,
+knowledge workflows, and copy-paste templates.
+
+## Who
+
+I'm [Harlan Nelson](https://www.linkedin.com/in/harlananelson/), a clinical
+data scientist. Personal site:
+[harlananelson.com](https://harlananelson.com). I publish here when a
+pattern is generic enough to be reusable by anyone working with LLMs.
+
+## Source
+
+All content lives in the public
+[`llmcheatsheets`](https://github.com/harlananelson/llmcheatsheets) repo on
+GitHub. Text is MIT-licensed; code samples are MIT-licensed (see the
+[`LICENSE`](https://github.com/harlananelson/llmcheatsheets/blob/main/LICENSE)
+and
+[`LICENSE-CODE`](https://github.com/harlananelson/llmcheatsheets/blob/main/LICENSE-CODE)
+files in the repo).
+
+## What's not on the site
+
+Some material is deliberately employer-specific and lives in a private
+companion repo. You won't see Databricks workspace IDs, employer-internal
+server names, internal project names, or any clinical data here. Patterns
+get generalized — and any employer-specific details stripped — before
+they're published.
+
+## Suggestions and corrections
+
+Open an issue on the
+[llmcheatsheets GitHub repo](https://github.com/harlananelson/llmcheatsheets/issues).
