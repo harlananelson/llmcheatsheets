@@ -1,8 +1,8 @@
 # AskSage Multi-Model Review — Comprehensive Reference
 
 **Skill location:** `~/.claude/skills/asksage-review/SKILL.md`
-**Scripts:** `/home/harlan/projects/asksage/asksage_review.py` (code review),
-`/home/harlan/projects/asksage/batch_review.py` (batch multi-model review)
+**Scripts:** `asksage_review.py` (code review),
+`batch_review.py` (batch multi-model review) — both ship in my asksage helper repo.
 
 ---
 
@@ -74,7 +74,7 @@ The primary method for sending prompts to models.
 ```python
 response = client.query(
     message=full_prompt,      # str — the full prompt text
-    model="claude-4-opus",    # str — model identifier
+    model="google-claude-46-opus",    # str — model identifier
     temperature=0.0,          # float — 0.0 for deterministic reviews
     dataset="none",           # str — "none" for no RAG dataset
 )
@@ -91,12 +91,12 @@ response = client.get_models()
 models = sorted(response.get("response", []))
 ```
 
-### Available Models (as of 2026-02)
+### Available Models (as of 2026-03)
 
 | Model ID | Short Name | Notes |
 |----------|------------|-------|
-| `claude-4-opus` | claude-opus | Anthropic's strongest model |
-| `gpt-4o` | gpt4o | OpenAI's flagship multimodal |
+| `google-claude-46-opus` | claude-opus | Anthropic's strongest model |
+| `gpt-5.2` | gpt5 | OpenAI's flagship multimodal |
 | `xai-grok` | grok | xAI Grok, detailed analysis |
 | `google-gemini-2.5-pro` | gemini | Google's latest, long context |
 
@@ -137,8 +137,8 @@ size by ~80%.
 python batch_review.py ./markdown_dir/ ./reviews/
 
 # Or per-file with asksage_review.py
-python asksage_review.py analysis.md --model claude-4-opus -o review-claude.md
-python asksage_review.py analysis.md --model gpt-4o -o review-gpt4o.md
+python asksage_review.py analysis.md --model google-claude-46-opus -o review-claude.md
+python asksage_review.py analysis.md --model gpt-5.2 -o review-gpt5.md
 python asksage_review.py analysis.md --model xai-grok -o review-grok.md
 python asksage_review.py analysis.md --model google-gemini-2.5-pro -o review-gemini.md
 ```
@@ -272,7 +272,7 @@ positional arguments:
 
 options:
   --models MODELS       Comma-separated model list
-                        (default: claude-4-opus,gpt-4o,xai-grok,google-gemini-2.5-pro)
+                        (default: google-claude-46-opus,gpt-5.2,xai-grok,google-gemini-2.5-pro)
   --prompt PROMPT       Review prompt (prepended to file content)
   --prompt-file FILE    Read prompt from a file
   --config CONFIG       YAML config with per-file prompts
@@ -321,7 +321,7 @@ analyses:
 ```
 reviews/
 ├── {filename}-review-claude-opus.md
-├── {filename}-review-gpt4o.md
+├── {filename}-review-gpt5.md
 ├── {filename}-review-grok.md
 ├── {filename}-review-gemini.md
 └── {filename}-synthesis.md          # Cross-model synthesis (manual)
@@ -375,7 +375,7 @@ If response.get("message") is very short:
 ```
 - Run: python asksage_review.py --list-models
 - Model IDs change as AskSage updates their platform
-- Common current IDs: claude-4-opus, gpt-4o, xai-grok, google-gemini-2.5-pro
+- Common current IDs: google-claude-46-opus, gpt-5.2, xai-grok, google-gemini-2.5-pro
 ```
 
 ---
@@ -405,9 +405,9 @@ client = AskSageClient(
 )
 
 MODELS = [
-    ("claude-4-opus", "claude-opus"),
+    ("google-claude-46-opus", "claude-opus"),
     ("xai-grok", "grok"),
-    ("gpt-4o", "gpt4o"),
+    ("gpt-5.2", "gpt5"),
     ("google-gemini-2.5-pro", "gemini"),
 ]
 
