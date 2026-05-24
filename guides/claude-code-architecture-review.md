@@ -606,7 +606,7 @@ Provenance).
 **Examples:**
 - Azure DevOps project (`/projects/azure/`) — organizes API access, repo
   management, and deployment workflows
-- SCDCernerProject (`/projects/SCDCernerProject/`) — organizes clinical
+- A clinical research project (Level 1 scaffold) — organizes clinical
   research analysis with R/tidymodels
 
 **Templates:** `templates/ontology-scaffold/` provides ready-to-customize
@@ -765,8 +765,8 @@ for tasks and workflows?
 
 Levels are not exclusive — a project can use Level 1 for its workflow
 organization while building a Level 2 or 3 system as its product.
-SCDCernerProject uses Level 1 to organize analysis notebooks while the
-clinical-nlp project is building a Level 3 extraction system.
+A clinical research project might use Level 1 to organize analysis notebooks while
+a clinical-NLP project might build a Level 3 extraction system.
 
 Projects may also evolve between levels:
 - Start at Level 1 to organize initial exploration
@@ -784,7 +784,7 @@ architecture intact.
 *This guide is domain-agnostic at Level 1, and provides the architectural
 framework for Levels 2 and 3. For worked examples: see the
 [Knowledge Vault Guide](knowledge-vault.md) (Level 1), the Azure DevOps
-project (Level 1), SCDCernerProject (Level 1), and clinical-nlp (Level 3).*
+project (Level 1), a clinical research project (Level 1), and a clinical-NLP project (Level 3).*
 
 ---
 

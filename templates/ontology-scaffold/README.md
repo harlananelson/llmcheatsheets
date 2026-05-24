@@ -63,7 +63,7 @@ Optional placeholders (replace or delete the containing section):
 
 - **Architecture guide:** `guides/claude-code-architecture-review.md` explains WHY this pattern works
 - **These templates:** provide WHAT to create (ready to customize)
-- **Worked examples:** SCDCernerProject (clinical research), azure project (DevOps tooling)
+- **Worked examples:** a clinical research project (Level 1), a DevOps tooling project (Level 1)
 
 ## Customization Depth
 

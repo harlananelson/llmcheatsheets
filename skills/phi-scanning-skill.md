@@ -35,8 +35,8 @@ This skill should be invoked **before** any data crosses a trust boundary:
 
 [Microsoft Presidio](https://microsoft.github.io/presidio/) is an open-source PII detection
 framework. It combines NLP (spaCy) with pattern matching and context-aware scoring. The
-`phi_scanner.py` tool in the asksage project extends Presidio with custom recognizers for
-healthcare-specific patterns that Presidio doesn't cover by default.
+A PHI scanner that wraps Presidio with custom recognizers (e.g. my `asksage/phi_scanner.py`) extends it
+for healthcare-specific patterns that Presidio doesn't cover by default.
 
 ### Architecture
 
