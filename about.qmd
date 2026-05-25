@@ -25,14 +25,6 @@ and
 [`LICENSE-CODE`](https://github.com/harlananelson/llmcheatsheets/blob/main/LICENSE-CODE)
 files in the repo).
 
-## What's not on the site
-
-Some material is deliberately employer-specific and lives in a private
-companion repo. You won't see Databricks workspace IDs, employer-internal
-server names, internal project names, or any clinical data here. Patterns
-get generalized — and any employer-specific details stripped — before
-they're published.
-
 ## Suggestions and corrections
 
 Open an issue on the
