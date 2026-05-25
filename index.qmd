@@ -58,5 +58,4 @@ formatting, cross-references, citations — and a one-page LLM cheatsheet.
 
 ---
 
-*Source: [llmcheatsheets on GitHub](https://github.com/harlananelson/llmcheatsheets) (MIT licensed).
-Sister private repo holds employer-specific material that's generalized before landing here.*
+*Source: [llmcheatsheets on GitHub](https://github.com/harlananelson/llmcheatsheets) (MIT licensed).*
