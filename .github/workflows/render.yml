@@ -16,10 +16,10 @@ jobs:
           set -euo pipefail
           quarto --version
           quarto render "cheatsheets/quarto_llm_cheatsheet.qmd" --to html --no-execute
-          test -f "cheatsheets/quarto_llm_cheatsheet.html"
+          test -f "_site/cheatsheets/quarto_llm_cheatsheet.html"
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v4
         with:
           name: html
           if-no-files-found: error
-          path: cheatsheets/quarto_llm_cheatsheet.html
+          path: _site/cheatsheets/quarto_llm_cheatsheet.html
