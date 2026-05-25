@@ -170,7 +170,7 @@ Every session, Claude Code automatically loads these files (in order):
 
 ### Quarto Help
 
-- **Comprehensive reference:** [`skills/quarto-skill.md`](skills/quarto-skill.md) -- load into Claude Code or paste into an LLM session.
+- **Comprehensive reference:** [`skills/quarto-skill.qmd`](skills/quarto-skill.qmd) -- load into Claude Code or paste into an LLM session.
 - **Rendered cheatsheet:** [`cheatsheets/quarto_llm_cheatsheet.html`](cheatsheets/quarto_llm_cheatsheet.html) -- open in a browser.
 - **LLM workflow guide:** [`guides/llm-usage.md`](guides/llm-usage.md) -- diff-first editing patterns and prompt cookbook.
 

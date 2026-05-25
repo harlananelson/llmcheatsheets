@@ -9,7 +9,7 @@ Version: Quarto 1.7 (Updated 2025‑07)
 
 This cheatsheet converts the human‑oriented Quarto PDF into a compact, copy‑pastable guide for LLM prompts and automation. Citations point back to the official PDF.
 
-> For comprehensive coverage (journals, books, interactive docs, execution control), see [`skills/quarto-skill.md`](../skills/quarto-skill.md).
+> For comprehensive coverage (journals, books, interactive docs, execution control), see [`skills/quarto-skill.qmd`](../skills/quarto-skill.qmd).
 
 ------------------------------------------------------------------------
 

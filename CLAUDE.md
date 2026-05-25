@@ -37,7 +37,7 @@ Changes to these files affect all projects (via global CLAUDE.md review-on-sessi
 
 - `guides/claude-code-setup.md` -- Configuration hierarchy, custom skills, custom agents, MCP connectors, new machine checklist
 - `guides/claude-code-architecture-review.md` -- Ontology-driven project organization, tiered framework
-- `skills/quarto-skill.md` -- Full Quarto reference (also installed as `~/.claude/skills/quarto/SKILL.md`)
+- `skills/quarto-skill.qmd` -- Full Quarto reference (also installed as `~/.claude/skills/quarto/SKILL.md`)
 - `skills/txtarchive-skill.md` -- Full txtarchive reference (also installed as `~/.claude/skills/txtarchive/SKILL.md`)
 - `templates/ontology-scaffold/` -- Level 1 project scaffolding templates
 

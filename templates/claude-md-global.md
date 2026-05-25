@@ -167,7 +167,7 @@ vfold_cv(data, v = 5, strata = outcome)
 
 ## Quarto Document Authoring
 
-**Full reference:** `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.md`
+**Full reference:** `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.qmd`
 
 ### Key Workflow: Jupyter-First (No Re-Execution)
 
@@ -266,7 +266,7 @@ whenever encountering unexpected results.
 - This file is loaded automatically for all projects under `{PROJECTS_ROOT}`
 - Project-specific CLAUDE.md files add context, they don't replace this
 - When in doubt, check txtarchive README: `{PROJECTS_ROOT}/txtarchive/README.md`
-- Full Quarto reference: `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.md`
+- Full Quarto reference: `{PROJECTS_ROOT}/llmcheatsheets/skills/quarto-skill.qmd`
 - Ontology templates: `{PROJECTS_ROOT}/llmcheatsheets/templates/ontology-scaffold/`
 - Architecture guide: `{PROJECTS_ROOT}/llmcheatsheets/guides/claude-code-architecture-review.md`
 - Data profiling skill: `{PROJECTS_ROOT}/llmcheatsheets/skills/data-profiling-skill.md`

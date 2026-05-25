@@ -16,7 +16,7 @@ This repository provides context files, references, and templates for LLM-assist
 
 ## What's Inside (Intended for LLM Context)
 
-- **Quarto skill reference** ([`skills/quarto-skill.md`](../skills/quarto-skill.md)) -- comprehensive Quarto authoring guide. Load this when you need help with rendering, formatting, cross-refs, or journal workflows.
+- **Quarto skill reference** ([`skills/quarto-skill.qmd`](../skills/quarto-skill.qmd)) -- comprehensive Quarto authoring guide. Load this when you need help with rendering, formatting, cross-refs, or journal workflows.
 - **Quarto cheatsheet** ([`cheatsheets/quarto_llm_cheatsheet.qmd`](../cheatsheets/quarto_llm_cheatsheet.qmd)) -- compact rendered reference covering core Quarto syntax.
 - **Research paper starter pack** ([`templates/research-paper-starter-pack/`](../templates/research-paper-starter-pack/)) -- manuscript scaffold wired for DOCX/PDF and CSL/BibTeX.
 - **Claude Code templates** ([`templates/`](../templates/)) -- starter `CLAUDE.md` and `settings.local.json` files.

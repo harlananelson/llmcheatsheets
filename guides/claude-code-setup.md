@@ -102,7 +102,7 @@ python -m txtarchive archive myproject/ output.txt \
 
 ## Quarto Document Authoring
 
-**Full reference:** `/projects/llmcheatsheets/skills/quarto-skill.md`
+**Full reference:** `/projects/llmcheatsheets/skills/quarto-skill.qmd`
 
 ---
 
