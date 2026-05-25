@@ -16,7 +16,7 @@ project:
 
 website:
   title: "GPT Sherpa"
-  description: "Practical patterns for working with LLMs."
+  description: "Claude Code setup guides, CLAUDE.md templates, Quarto authoring patterns, and reusable LLM workflow skills for data scientists and engineers."
   site-url: "https://gptserpa.com"
   navbar:
     left:
@@ -82,6 +82,7 @@ website:
 format:
   html:
     theme: cosmo
+    css: styles.css
     toc: true
     toc-depth: 3
     toc-location: left

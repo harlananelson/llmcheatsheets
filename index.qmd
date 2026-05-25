@@ -1,61 +1,150 @@
 ---
 title: "GPT Sherpa"
-description: "Practical patterns for working with LLMs."
+description: "Claude Code setup guides, CLAUDE.md templates, Quarto authoring patterns, and reusable LLM workflow skills for data scientists and engineers."
 pagetitle: "GPT Sherpa"
 toc: false
 ---
 
-# Practical patterns for working with LLMs
+# Production-tested LLM workflow patterns
 
-A working data scientist's notebook of patterns that hold up in production:
-how to set up Claude Code, how to write CLAUDE.md control documents that
-make an LLM behave, how to author Quarto documents with LLM help, and a
-small library of templates you can copy.
+::: {.sherpa-hero}
 
-Not generic LLM hype, not vendor docs — patterns proven on real projects,
-generalized for anyone to reuse.
+GPT Sherpa is a field notebook for data scientists and software engineers
+using LLMs on real projects: Claude Code setup, `CLAUDE.md` control files,
+Quarto authoring workflows, and copyable skills that make AI-assisted work
+more reliable.
 
-## Three places to start
+Not prompt hacks. Not vendor docs. These are practical patterns that survived
+real work, then got cleaned up so you can reuse them.
 
-::: {.grid}
+::: {.sherpa-actions}
 
-::: {.g-col-12 .g-col-md-4}
-### New to Claude Code?
-
-The setup guide walks through installing the CLI, configuring permissions,
-and adding your first custom skill.
-
-[Claude Code setup →](guides/claude-code-setup.md)
+::: {.sherpa-action .sherpa-action-primary}
+[Start with Claude Code setup →](guides/claude-code-setup.md)
 :::
 
-::: {.g-col-12 .g-col-md-4}
-### Already running Claude Code?
-
-Make it work better. A `CLAUDE.md` control document is how you teach an
-LLM your project. Start from the template, refine as the project grows.
-
-[CLAUDE.md template →](templates/claude-md-project.md)
-:::
-
-::: {.g-col-12 .g-col-md-4}
-### Authoring with Quarto?
-
-A reference skill that captures Quarto execution control, journal
-formatting, cross-references, citations — and a one-page LLM cheatsheet.
-
-[Quarto authoring skill →](skills/quarto-skill.qmd)
+::: {.sherpa-action}
+[Copy a project CLAUDE.md →](templates/claude-md-project.md)
 :::
 
 :::
 
-## What's here
+:::
 
-- **Getting started** — what LLM-assisted work looks like; a quick GitHub Copilot primer.
-- **Claude Code** — setup and an opinionated architecture-review pattern for organizing projects with Claude.
-- **Quarto** — authoring skill, an LLM cheatsheet, and the ontology-website pattern.
-- **Skills & patterns** — drop-in skill files for AskSage multi-model review, data profiling, PHI scanning, knowledge vaults, txtarchive, Rhino + Shiny, and tidymodels.
-- **Templates** — project and global `CLAUDE.md` starters, a permissions `settings.local.json`, an ontology project scaffold, and a Quarto research-paper starter pack.
+## Choose your starting point
+
+::: {.grid .sherpa-card-grid}
+
+::: {.g-col-12 .g-col-md-4 .sherpa-card}
+### I am setting up Claude Code
+
+Install the CLI, configure permissions, and add your first custom skill without
+guessing which defaults matter.
+
+[Use the setup guide →](guides/claude-code-setup.md)
+:::
+
+::: {.g-col-12 .g-col-md-4 .sherpa-card}
+### I already use Claude Code
+
+Give the model durable project memory with a `CLAUDE.md` file. Start from a
+template, then refine the instructions as the project grows.
+
+[Copy the CLAUDE.md template →](templates/claude-md-project.md)
+:::
+
+::: {.g-col-12 .g-col-md-4 .sherpa-card}
+### I write with Quarto
+
+Use LLMs to author Quarto documents while keeping execution control,
+cross-references, citations, and reproducible outputs intact.
+
+[Open the Quarto authoring skill →](skills/quarto-skill.qmd)
+:::
+
+:::
+
+## What you can copy
+
+::: {.grid .sherpa-card-grid}
+
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Claude Code workflows
+
+- [Claude Code setup](guides/claude-code-setup.md) — install, configure, and
+  make the first skill useful.
+- [Architecture review pattern](guides/claude-code-architecture-review.md) —
+  organize a repo so Claude can reason about it without wandering.
+- [Project CLAUDE.md](templates/claude-md-project.md) — a starter control file
+  for project-specific behavior.
+- [Global CLAUDE.md](templates/claude-md-global.md) — reusable defaults for
+  your own working style.
+:::
+
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Quarto and publishing patterns
+
+- [Quarto authoring skill](skills/quarto-skill.qmd) — execution control,
+  journal formatting, citations, and cross-references.
+- [Quarto LLM cheatsheet](cheatsheets/quarto_llm_cheatsheet.qmd) — the compact
+  version when you need the rules close at hand.
+- [Ontology website pattern](guides/quarto-ontology-website.md) — a pattern for
+  turning structured domain knowledge into a navigable site.
+- [Research paper starter](templates/research-paper-starter-pack/README.md) —
+  a Quarto scaffold for paper-style writing.
+:::
+
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Data and review skills
+
+- [Data profiling](skills/data-profiling-skill.md) — inspect data before asking
+  an LLM to explain or model it.
+- [AskSage review](skills/asksage-review-skill.md) — package multi-model review
+  into a repeatable workflow.
+- [Tidymodels](skills/tidymodels-skill.md) — capture modeling conventions in a
+  reusable skill.
+- [Rhino + Shiny](skills/rhino-shiny-skill.md) — guide LLM-assisted work in a
+  structured Shiny application.
+:::
+
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Regulated and knowledge-work patterns
+
+- [PHI scanning](skills/phi-scanning-skill.md) — make sensitive-data review an
+  explicit step instead of an afterthought.
+- [Knowledge vault pattern](guides/knowledge-vault.md) — organize reusable
+  project context so models can retrieve the right background.
+- [Knowledge vault skill](skills/knowledge-vault-skill.md) — the drop-in skill
+  version of the pattern.
+- [txtarchive](skills/txtarchive-skill.md) — work with archived text in a way
+  that stays inspectable.
+:::
+
+:::
+
+## Why this exists
+
+LLM-assisted work breaks down when the model has no project context, no
+operating rules, and no way to tell exploratory notes from production
+constraints. GPT Sherpa treats those pieces as part of the workflow:
+write the control document, name the assumptions, keep reusable patterns close,
+and make the next run better than the last one.
+
+The result is not a magic prompt. It is a small operating system for using LLMs
+with code, data, and technical writing.
+
+## Useful first files
+
+- **For a new repo** — start with the
+  [Project CLAUDE.md template](templates/claude-md-project.md).
+- **For a personal default** — adapt the
+  [Global CLAUDE.md template](templates/claude-md-global.md).
+- **For Quarto writing** — keep the
+  [Quarto LLM cheatsheet](cheatsheets/quarto_llm_cheatsheet.qmd) open.
+- **For structured domain work** — copy the
+  [Ontology scaffold](templates/ontology-scaffold/README.md).
 
 ---
 
-*Source: [llmcheatsheets on GitHub](https://github.com/harlananelson/llmcheatsheets) (MIT licensed).*
+Source: [llmcheatsheets on GitHub](https://github.com/harlananelson/llmcheatsheets).
+Licensed for reuse under the repository terms.

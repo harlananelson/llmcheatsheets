@@ -1,0 +1,215 @@
+/* GPT Sherpa custom layer
+   Drop this in as styles.css and reference it from _quarto.yml:
+
+   format:
+     html:
+       theme: cosmo
+       css: styles.css
+
+   This layer keeps Quarto's documentation affordances but gives the homepage
+   stronger hierarchy, warmer surfaces, and more intentional cards.
+*/
+
+:root {
+  --sherpa-bg: #f7f4ed;
+  --sherpa-surface: #fffdf8;
+  --sherpa-surface-alt: #f1ece1;
+  --sherpa-border: #ddd4c3;
+  --sherpa-text: #25221c;
+  --sherpa-muted: #6f675b;
+  --sherpa-accent: #0b6f76;
+  --sherpa-accent-dark: #084d55;
+  --sherpa-accent-soft: #dceff0;
+  --sherpa-code: #7c3f00;
+  --sherpa-radius: 18px;
+  --sherpa-shadow: 0 14px 38px rgba(55, 44, 28, 0.08);
+}
+
+body.quarto-light {
+  background:
+    radial-gradient(circle at top left, rgba(11, 111, 118, 0.08), transparent 28rem),
+    linear-gradient(180deg, var(--sherpa-bg) 0%, #fbfaf6 42%, #ffffff 100%);
+  color: var(--sherpa-text);
+}
+
+.navbar {
+  border-bottom: 1px solid rgba(221, 212, 195, 0.72);
+  box-shadow: none;
+}
+
+.navbar-title {
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+
+.quarto-title-block .title,
+h1.title {
+  display: none;
+}
+
+main.content {
+  max-width: 980px;
+}
+
+main.content > h1:first-of-type {
+  margin-top: clamp(2rem, 7vw, 5rem);
+  max-width: 12ch;
+  color: var(--sherpa-text);
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+}
+
+main.content > h2 {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--sherpa-border);
+  color: var(--sherpa-text);
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  letter-spacing: -0.035em;
+}
+
+main.content p {
+  color: var(--sherpa-muted);
+  font-size: 1.03rem;
+  line-height: 1.72;
+}
+
+main.content a {
+  color: var(--sherpa-accent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+main.content a:hover {
+  color: var(--sherpa-accent-dark);
+}
+
+main.content code {
+  color: var(--sherpa-code);
+  background: rgba(124, 63, 0, 0.08);
+  border: 1px solid rgba(124, 63, 0, 0.1);
+  border-radius: 0.35rem;
+  padding: 0.08rem 0.28rem;
+}
+
+.sherpa-hero {
+  max-width: 760px;
+  margin-top: 1.15rem;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+.sherpa-hero p:first-child {
+  color: var(--sherpa-text);
+  font-size: clamp(1.12rem, 2vw, 1.32rem);
+  line-height: 1.62;
+}
+
+.sherpa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.65rem;
+}
+
+.sherpa-action a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.78rem 1rem;
+  border: 1px solid var(--sherpa-border);
+  border-radius: 999px;
+  background: var(--sherpa-surface);
+  color: var(--sherpa-accent-dark);
+  font-weight: 650;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(55, 44, 28, 0.05);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.sherpa-action-primary a {
+  border-color: var(--sherpa-accent);
+  background: var(--sherpa-accent);
+  color: #ffffff;
+}
+
+.sherpa-action a:hover {
+  transform: translateY(-1px);
+  border-color: var(--sherpa-accent);
+  background: var(--sherpa-accent-soft);
+  color: var(--sherpa-accent-dark);
+}
+
+.sherpa-action-primary a:hover {
+  background: var(--sherpa-accent-dark);
+  color: #ffffff;
+}
+
+.sherpa-card-grid {
+  row-gap: 1rem;
+}
+
+.sherpa-card {
+  min-height: 100%;
+  padding: clamp(1rem, 2.2vw, 1.35rem);
+  border: 1px solid var(--sherpa-border);
+  border-radius: var(--sherpa-radius);
+  background: rgba(255, 253, 248, 0.86);
+  box-shadow: var(--sherpa-shadow);
+}
+
+.sherpa-card h3 {
+  margin-top: 0;
+  color: var(--sherpa-text);
+  font-size: 1.18rem;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+
+.sherpa-card p {
+  margin-bottom: 0.85rem;
+  font-size: 0.98rem;
+}
+
+.sherpa-card ul {
+  padding-left: 1.1rem;
+}
+
+.sherpa-card li {
+  margin-bottom: 0.58rem;
+  color: var(--sherpa-muted);
+  line-height: 1.55;
+}
+
+.sherpa-card li::marker {
+  color: var(--sherpa-accent);
+}
+
+hr {
+  margin-top: 3rem;
+  border-color: var(--sherpa-border);
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  main.content {
+    padding-left: 1.05rem;
+    padding-right: 1.05rem;
+  }
+
+  main.content > h1:first-of-type {
+    max-width: 10ch;
+  }
+
+  .sherpa-actions {
+    display: grid;
+  }
+
+  .sherpa-action a {
+    width: 100%;
+  }
+}
