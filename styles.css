@@ -131,10 +131,11 @@ main.content code {
     background 160ms ease;
 }
 
-.sherpa-action-primary a {
+.sherpa-action.sherpa-action-primary a,
+.sherpa-action.sherpa-action-primary a:visited {
   border-color: var(--sherpa-accent);
   background: var(--sherpa-accent);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .sherpa-action a:hover {
@@ -144,9 +145,17 @@ main.content code {
   color: var(--sherpa-accent-dark);
 }
 
-.sherpa-action-primary a:hover {
+.sherpa-action.sherpa-action-primary a:hover,
+.sherpa-action.sherpa-action-primary a:focus,
+.sherpa-action.sherpa-action-primary a:focus-visible {
   background: var(--sherpa-accent-dark);
-  color: #ffffff;
+  border-color: var(--sherpa-accent-dark);
+  color: #ffffff !important;
+}
+
+.sherpa-action a:focus-visible {
+  outline: 3px solid var(--sherpa-accent);
+  outline-offset: 3px;
 }
 
 .sherpa-card-grid {
