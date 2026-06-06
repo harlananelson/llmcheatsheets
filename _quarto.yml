@@ -34,6 +34,10 @@ website:
             href: guides/claude-code-setup.md
           - text: "Architecture review"
             href: guides/claude-code-architecture-review.md
+      - text: Grok
+        menu:
+          - text: "Subagents & provenance"
+            href: guides/grok-subagents-provenance.md
       - text: Quarto
         menu:
           - text: "Authoring skill"
