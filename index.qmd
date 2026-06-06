@@ -27,6 +27,10 @@ real work, then got cleaned up so you can reuse them.
 [Copy a project CLAUDE.md →](templates/claude-md-project.md)
 :::
 
+::: {.sherpa-action}
+[Explore Grok subagents for pipelines →](guides/grok-subagents-provenance.md)
+:::
+
 :::
 
 :::
@@ -60,6 +64,15 @@ Use LLMs to author Quarto documents while keeping execution control,
 cross-references, citations, and reproducible outputs intact.
 
 [Open the Quarto authoring skill →](skills/quarto-skill.qmd)
+:::
+
+::: {.g-col-12 .g-col-md-4 .sherpa-card}
+### I use Grok with agents & pipelines
+
+Orchestrate Anthropic computer use / agents with Grok subagents, todos, and
+SCDC-style DAG provenance, data-design registries, and validation gates.
+
+[Explore Grok subagents & provenance →](guides/grok-subagents-provenance.md)
 :::
 
 :::
@@ -120,6 +133,18 @@ cross-references, citations, and reproducible outputs intact.
   that stays inspectable.
 :::
 
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Grok workflows (xAI)
+
+- [Grok subagents & provenance](guides/grok-subagents-provenance.md) — orchestrate
+  Anthropic agents on real targets DAGs using SCDC-style data-design registries,
+  validation gates, and provenance tracking.
+- Use Grok subagents + todo_write for parallel verification when Claude Code
+  computer use or Artifacts do the hands-on work.
+- Grok reads the same CLAUDE.md / .claude/ rules, so all existing patterns
+  (knowledge vault, PHI scanning, etc.) transfer directly.
+:::
+
 :::
 
 ## Why this exists
@@ -143,6 +168,10 @@ with code, data, and technical writing.
   [Quarto LLM cheatsheet](cheatsheets/quarto_llm_cheatsheet.qmd) open.
 - **For structured domain work** — copy the
   [Ontology scaffold](templates/ontology-scaffold/README.md).
+- **For agentic pipelines with Grok + Anthropic** — read the
+  [Grok subagents & provenance guide](guides/grok-subagents-provenance.md)
+  (integrates SCDCernerProject DAG patterns, data-design registries, and
+  2026 computer-use workflows).
 
 ---
 
