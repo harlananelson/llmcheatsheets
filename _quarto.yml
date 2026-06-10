@@ -4,6 +4,7 @@ project:
   render:
     - "index.qmd"
     - "about.qmd"
+    - "advice/*.qmd"
     - "guides/*.md"
     - "skills/*.md"
     - "skills/*.qmd"
@@ -22,6 +23,8 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: advice/index.qmd
+        text: Advice
       - text: Getting started
         menu:
           - text: "LLM usage patterns"
@@ -34,7 +37,7 @@ website:
             href: guides/claude-code-setup.md
           - text: "Architecture review"
             href: guides/claude-code-architecture-review.md
-      - text: Grok
+      - text: Grok Build
         menu:
           - text: "Subagents & provenance"
             href: guides/grok-subagents-provenance.md

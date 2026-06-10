@@ -1,5 +1,13 @@
 # llmcheatsheets
 
+## This repo IS the live gptserpa.com site ("GPT Sherpa")
+
+When the user asks to "update the gptserpa site" (or gptserpa.com), **work in THIS repo** — not in `/projects/gptserpa`. This repo's `_quarto.yml` sets `site-url: https://gptserpa.com`, and the Netlify site (`gptserpa`, id `23e5f146-e332-470f-811e-cf245b659d04`) is connected to this GitHub repo: **push to main auto-deploys to gptserpa.com**.
+
+The separate private `/projects/gptserpa` repo is a **drafting space only** — it is not deployed and must not be (its posts contain unsanitized project names). Content moving from there to here needs the private→public sanitizing pass (e.g., SCDCernerProject → ClinicalDataProject). Decided 2026-06-10.
+
+- `advice/` holds the dated, opinionated advice posts (Quarto listing + RSS); the featured/current article also gets a card on `index.qmd` under "Latest advice".
+
 ## Repo Visibility: PUBLIC
 
 This is a **public** repository. It must NOT contain:

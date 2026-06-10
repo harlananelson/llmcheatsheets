@@ -16,3 +16,6 @@ _site/
 
 # Drafts kept locally but not published (employer-specific WIP, etc.)
 skills/edw-connection-skill.md
+
+# Local Netlify folder
+.netlify

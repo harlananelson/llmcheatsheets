@@ -1,0 +1,75 @@
+---
+title: "Verify before trusting"
+description: "The single most important habit for using AI in real work."
+date: "2026-04-23"
+categories: [workflow, reliability]
+---
+
+The single most valuable habit when working with a language model is this:
+**never act on a factual claim from the model without checking it.** Not
+"usually." Not "for important claims." Every one.
+
+That sounds exhausting. In practice it isn't, because most of what you
+get from a model in real work isn't a factual claim — it's a draft, a
+restructuring, a pattern, a plausible next step. Those things you can
+evaluate on the page. The dangerous output is the confident factual
+statement: a column name, a function signature, a citation, a package
+version, a regulation, a date. That's what costs you an hour of debugging
+or a retracted claim.
+
+## What this looks like
+
+- Model tells you a function exists → `grep` for it before you call it.
+- Model tells you a column is named `year_of_birth` → read the actual
+  schema before writing the join.
+- Model cites a paper → open the paper, or at least confirm the DOI
+  resolves.
+- Model gives you a shell command that "should work" → read the flags
+  against `--help` before running it with `sudo`.
+
+## Why it works
+
+Language models are extremely good at generating text that *reads like*
+it came from someone who knew. They are not, by construction, reliable
+sources about the world. The verification habit closes that gap cheaply:
+you get the speed of the draft and the reliability of the reference.
+
+The people who get burned by AI output are not the people who use it a
+lot. They are the people who use it a lot *and* skip this step.
+
+## When the tool can act (computer use, agents, 2026+)
+
+Anthropic's agentic surfaces have matured fast in 2026: computer use is in the Claude Code CLI and Desktop app (research preview), Claude in Chrome is in beta for all paid plans, Opus 4.8 (May 2026) shipped alongside dynamic workflows that run fleets of parallel subagents, and Fable 5 (June 2026, the first generally available Mythos-class model) is explicitly built to work autonomously for longer than any prior Claude. The model can read your screen, click, type, run commands, edit files, and drive multi-step workflows across apps and browsers. This is powerful leverage for pipeline work — inspecting a `_targets.R`, proposing a new `tar_target` for a schema change, running a dry validation, opening the resulting artifact.
+
+The verification rule becomes stricter and more operational:
+- The model proposes a change to a target or a join → you still `tar_visnetwork()` or `tar_manifest()` and read the actual column definitions before accepting.
+- The agent "reads the schema" via screen or tool call → you still cross-check against the project's data-design-decisions registry (or equivalent) and the generated API reference for any shared extract/transform packages.
+- The run produces new outputs or figures → you still open them and apply the same gates you would for human-written code (rendering integrity, event counts, assumption status).
+
+Real projects that already live this way (targets-based DAGs with explicit data-design registries, 100% documented shared package APIs, provenance-tagged decisions, and pre-push validation) give you a ready-made contract the agent can help you maintain — but only if you keep the human in the loop at the "does this match the recorded rule and the live schema?" step.
+
+The 2026 agentic tools make the *draft* cheaper and the *verification surface* larger. The habit that scales is the same one that worked for static prompts: treat every factual or structural claim as something that must be checked against the actual DAG, the actual table, and the actual decision log before it becomes part of the permanent record.
+
+## When the harness verifies for you (it doesn't, quite)
+
+The newest twist is that the tools now offer *machine-side* verification loops. Anthropic's Managed Agents accept an **Outcome** — you state what "done" looks like as a gradeable rubric, and a separate grader model iterates the agent against it (`user.define_outcome`, iterate → grade → revise). Claude Code's `/goal` does the same in the terminal: a fresh evaluator model checks a completion condition after every turn and keeps the agent working until it holds.
+
+These are genuinely useful — but read what they verify. The grader checks the artifact against *your stated criteria*. It cannot check what you didn't state, and it cannot see the live schema, the production table, or last quarter's meaning of a column. Two consequences:
+
+- **Writing the rubric is now part of the verification habit.** "CSV has a numeric `price` column per SKU" is checkable; "the data looks right" is not. A vague rubric produces a confident loop converging on the wrong thing.
+- **The final acceptance step is still yours.** The grader saying `satisfied` is a claim like any other — check it against the actual run, the actual table, the actual decision log before it lands in the permanent record.
+
+## Grok Build (xAI) as a complementary lens tool
+
+Grok Build — xAI's terminal coding agent, launched May 2026 — brings a different but highly compatible set of strengths for exactly this kind of work. Claude Code compatibility is official and zero-config: it automatically reads the same `CLAUDE.md`, `CLAUDE.local.md`, `.claude/rules/`, skills, hooks, and MCP configurations that ClinicalDataProject and other rigorous setups use (its own native convention is the `AGENTS.md` family plus a `.grok/` directory). This means SCDC-style patterns — typed assumptions, provenance tags like `llm_proposed`, validation gates, data-design-decision registries, code-reuse review against generated API docs — transfer directly without translation.
+
+Grok Build's native advantages for meta-thinkers and pipeline work:
+
+- **Subagents and decomposition**: `spawn_subagent` launches typed subagents (general-purpose, explore, plan) in parallel, with git worktree isolation. This is perfect for parallel verification: one subagent audits the _targets.R graph, another checks live table schemas via terminal/file tools, another searches for recent gotchas with the agentic pattern in use.
+- **Structured tooling + todo tracking**: Built-in `todo_write` maintains a live task list across complex workflows (e.g., "1. Read current _targets.R 2. Propose schema change 3. Update DD- registry with provenance 4. Run tar dry-run + human verification"). Tools for web search and fetch, terminal execution (run `tar_visnetwork`, `grep` schemas), file read/edit, and MCP discovery give it full agentic reach.
+- **Plan mode**: `enter_plan_mode` gives read-only exploration of a codebase or DAG before any edits — write tools are blocked, and you approve or rewrite the plan before execution.
+- **Cross-vendor review**: Because both tools read the same project rules, a Grok Build review of a Claude proposal (or vice versa) happens under the same contract — a reviewer that shares no weights or session state with the proposer.
+
+In practice: let one agent hold the session and do the hands-on work; use the other's subagents and todo system for framing, decomposition, and independent review. Always close the loop with the same human verification you would apply to either model alone: run the actual targets command, inspect the live schema, update the registry with a clear provenance tag, and only then accept the change.
+
+The meta-thinker advantage is amplified: the agents help you stay at the level of "what must be true for this pipeline change to be safe and traceable?" while they do the traversal and typing. The verification habit remains non-negotiable — but now you have better tools for distributing and auditing the work across models.

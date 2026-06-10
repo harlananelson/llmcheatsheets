@@ -298,9 +298,9 @@ default_prompt: |
 # Per-analysis overrides
 analyses:
   340-analysis.md:
-    title: "Adolescent SCD Organ Damage"
+    title: "Adolescent Chronic Disease Organ Damage"
     prompt: |
-      You are a clinical epidemiologist specializing in sickle cell disease.
+      You are a clinical epidemiologist specializing in chronic disease outcomes.
       Review this analysis of adolescent organ damage patterns...
 
   345-analysis.md:
@@ -310,7 +310,7 @@ analyses:
       prediction pipeline...
 
   360-analysis.md:
-    title: "CKD Nephropathy Analysis"
+    title: "Renal Complication Analysis"
     # No custom prompt — uses default_prompt
 ```
 

@@ -1,0 +1,73 @@
+---
+title: "The rubric is the new prompt"
+description: "Mid-2026 agentic tools accept a definition of done and iterate against it. Writing checkable success criteria is now the highest-leverage skill."
+date: "2026-06-10"
+categories: [agents, workflow, verification]
+---
+
+The most important change in the AI tooling landscape in the first half of
+2026 is not a model. It is a shift in what the tools accept as input: not just
+a task, but a **definition of done** — and a harness that iterates against it
+without you.
+
+Three examples, all shipped between April and June 2026:
+
+- **Anthropic Managed Agents — Outcomes.** You send a `define_outcome` event
+  with a task description and a *rubric*. A separate grader model (its own
+  context, not the agent's) scores each iteration against the rubric and feeds
+  per-criterion gaps back. The loop runs iterate → grade → revise until
+  satisfied, capped at a max iteration count.
+- **Claude Code — `/goal`.** A fresh evaluator model checks a completion
+  condition after every turn and keeps the agent working — potentially for
+  days — until the condition holds.
+- **Claude Fable 5** (June 9, 2026 — the first generally available
+  Mythos-class model, a tier above Opus). Anthropic's own migration guidance
+  is explicit: give the full task specification up front in a single
+  well-specified turn and run at high effort. The model's headline capability
+  is long-horizon autonomy *against a stated goal*.
+
+Grok Build runs the same play from the other side: its plan mode produces a
+plan you approve, comment on, or rewrite *before* execution, and post-approval
+deviations surface as reviewable diffs. Different mechanism, same contract —
+the human's contribution moves from steering turns to specifying success.
+
+## Why this favors the meta-thinker
+
+This site has argued that the meta-thinker's skill — describe the problem well
+enough that someone good could solve it — becomes the entire job. That was a
+working style. As of mid-2026 it is a literal interface: the spec is no longer
+something you hold in your head while you steer; it is the artifact the
+harness consumes.
+
+Which means rubric quality is now load-bearing. The graders are competent but
+literal. They verify what you stated, nothing else:
+
+- **Checkable beats aspirational.** "The output CSV has a numeric `price`
+  column for every SKU" is gradeable. "The data looks good" is not — a vague
+  rubric produces a confident loop converging on the wrong thing, with the
+  grader cheerfully reporting `satisfied`.
+- **Independent criteria beat bundled ones.** Graders score per criterion.
+  Five separate checkable statements give the agent five separate gaps to
+  close; one paragraph gives it a vibe.
+- **The rubric can't see what you didn't mount.** It grades the artifact in
+  the session, not your live schema or last quarter's column semantics. The
+  checks that need the real world stay outside the loop.
+
+## What stays human
+
+Two things, and they are the same two things as before.
+
+First, the rubric itself. Writing one forces the question every verification
+habit on this site comes back to: *what must be true for this to be safe?* If
+you can't write the rubric, you weren't ready to delegate the task — to a
+model or to anyone.
+
+Second, the acceptance. A grader's `satisfied` is a claim like any other
+model output. Before the change lands in the permanent record — the DAG, the
+registry, the paper — you run the actual command, read the actual table,
+check the actual decision log. The loop got cheaper and longer; the last step
+didn't move.
+
+Put the rubric in the registry next to the decision it produced. Six months
+from now, "what did we ask the agent to achieve, exactly?" will be the most
+useful provenance question you can answer.

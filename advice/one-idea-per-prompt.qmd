@@ -1,0 +1,41 @@
+---
+title: "One idea per prompt"
+description: "Why small prompts beat big ones in practice."
+date: "2026-04-22"
+categories: [prompting, workflow]
+---
+
+A common mistake when people get comfortable with a model is to stuff
+more and more into a single prompt: the task, the constraints, the edge
+cases, the output format, three examples, a style guide, and a reminder
+not to hallucinate. The prompt gets longer; the output gets worse.
+
+The fix is almost always the same: **ask for less in one turn**.
+
+## Why long prompts fail
+
+Models attend to their whole context, but not evenly. Long prompts bury
+the actual ask under scaffolding, and the model quietly optimizes for
+whichever part of the instruction was most salient — often not the part
+you cared about.
+
+A tighter prompt gives the model a single target. You can add the next
+constraint on the next turn, after you've seen that the first one stuck.
+
+## The pattern that works
+
+1. State the task in one sentence.
+2. Let the model respond.
+3. Correct or extend: "good, now also handle X," "that's wrong because
+   Y, try again."
+
+This turns prompting into a conversation you can steer, instead of a
+specification you have to get right on the first try. It's also much
+faster in wall-clock time, because the first response comes back sooner
+and you catch misunderstandings earlier.
+
+## When to break the rule
+
+Batch work — "process these 200 records the same way" — does want the
+full spec up front, because you are not going to iterate. But for any
+task where you are the reader of the output, start small.

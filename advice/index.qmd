@@ -1,0 +1,20 @@
+---
+title: "Advice"
+description: "Short, opinionated notes on using AI well — one idea each, dated, and grounded in real work."
+listing:
+  id: advice-posts
+  contents: "*.qmd"
+  type: default
+  fields: [date, title, description, categories]
+  sort: "date desc"
+  feed: true
+toc: false
+---
+
+Short, opinionated notes on how to get real work done with large language
+models — without the hype and without the fear. Each post is a single idea,
+as short as it can be. Posts are dated on purpose: what was true in mid-2026
+may not be true in 2027.
+
+:::{#advice-posts}
+:::

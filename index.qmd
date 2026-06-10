@@ -28,9 +28,29 @@ real work, then got cleaned up so you can reuse them.
 :::
 
 ::: {.sherpa-action}
-[Explore Grok subagents for pipelines →](guides/grok-subagents-provenance.md)
+[Read the latest advice →](advice/index.qmd)
 :::
 
+:::
+
+:::
+
+## Latest advice
+
+::: {.grid .sherpa-card-grid}
+
+::: {.g-col-12 .sherpa-card}
+### New — The rubric is the new prompt *(June 2026)*
+
+The biggest change in the AI tooling landscape this year is not a model. It is
+a shift in what the tools accept as input: not just a task, but a **definition
+of done** — and a harness that iterates against it without you. Claude's
+Outcomes and `/goal`, Grok Build's plan approval, and Fable 5's
+spec-up-front design all reward the same skill: writing success criteria a
+grader can actually check.
+
+[Read the full post →](advice/the-rubric-is-the-new-prompt.qmd) ·
+[Browse all advice →](advice/index.qmd)
 :::
 
 :::
@@ -67,12 +87,13 @@ cross-references, citations, and reproducible outputs intact.
 :::
 
 ::: {.g-col-12 .g-col-md-4 .sherpa-card}
-### I use Grok with agents & pipelines
+### I use Grok Build with agents & pipelines
 
-Orchestrate Anthropic computer use / agents with Grok subagents, todos, and
-SCDC-style DAG provenance, data-design registries, and validation gates.
+Pair Claude's agents with Grok Build subagents, todos, and provenance-first
+DAG patterns — cross-vendor review under the same CLAUDE.md rules, with
+explicit data-design registries and validation gates.
 
-[Explore Grok subagents & provenance →](guides/grok-subagents-provenance.md)
+[Explore Grok Build subagents & provenance →](guides/grok-subagents-provenance.md)
 :::
 
 :::
@@ -134,15 +155,28 @@ SCDC-style DAG provenance, data-design registries, and validation gates.
 :::
 
 ::: {.g-col-12 .g-col-md-6 .sherpa-card}
-### Grok workflows (xAI)
+### Grok Build workflows (xAI)
 
-- [Grok subagents & provenance](guides/grok-subagents-provenance.md) — orchestrate
-  Anthropic agents on real targets DAGs using SCDC-style data-design registries,
-  validation gates, and provenance tracking.
-- Use Grok subagents + todo_write for parallel verification when Claude Code
-  computer use or Artifacts do the hands-on work.
-- Grok reads the same CLAUDE.md / .claude/ rules, so all existing patterns
-  (knowledge vault, PHI scanning, etc.) transfer directly.
+- [Grok Build subagents & provenance](guides/grok-subagents-provenance.md) —
+  cross-vendor review of agentic work on real targets DAGs using explicit
+  data-design registries, validation gates, and provenance tracking.
+- Use Grok Build's typed subagents (`spawn_subagent`, worktree-isolated) +
+  `todo_write` for parallel verification when Claude Code does the hands-on work.
+- Grok Build reads the same CLAUDE.md / .claude/ rules with zero configuration,
+  so all existing patterns (knowledge vault, PHI scanning, etc.) transfer directly.
+:::
+
+::: {.g-col-12 .g-col-md-6 .sherpa-card}
+### Advice — opinionated, dated, one idea each
+
+- [The rubric is the new prompt](advice/the-rubric-is-the-new-prompt.qmd) —
+  mid-2026 agents iterate against a definition of done; write checkable criteria.
+- [Verify before trusting](advice/verify-before-trusting.qmd) — the single most
+  important habit for using AI in real work.
+- [The hammer and the lens](advice/the-hammer-and-the-lens.qmd) — AI amplifies
+  coders and meta-thinkers differently.
+- [One idea per prompt](advice/one-idea-per-prompt.qmd) — why small prompts beat
+  big ones in practice.
 :::
 
 :::
@@ -168,9 +202,9 @@ with code, data, and technical writing.
   [Quarto LLM cheatsheet](cheatsheets/quarto_llm_cheatsheet.qmd) open.
 - **For structured domain work** — copy the
   [Ontology scaffold](templates/ontology-scaffold/README.md).
-- **For agentic pipelines with Grok + Anthropic** — read the
-  [Grok subagents & provenance guide](guides/grok-subagents-provenance.md)
-  (integrates SCDCernerProject DAG patterns, data-design registries, and
+- **For agentic pipelines with Grok Build + Claude** — read the
+  [Grok Build subagents & provenance guide](guides/grok-subagents-provenance.md)
+  (integrates ClinicalDataProject-style DAG patterns, data-design registries, and
   2026 computer-use workflows).
 
 ---

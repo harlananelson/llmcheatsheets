@@ -78,7 +78,7 @@ data['field_name'].dtype
 **What to verify:**
 - Actual values match what your code checks for
   - `deceased == "died"` fails if deceased is logical (TRUE/FALSE)
-  - `filter(scd == "Sickle Cell")` fails if scd is logical
+  - `filter(has_condition == "Case")` fails if has_condition is logical
 - No unexpected NA/NULL patterns
 - Factor levels are what you expect (not numeric codes)
 - Character encoding is consistent (no mixed case, trailing spaces)
@@ -194,7 +194,7 @@ print(col_classes, n = Inf)
 
 cat("\n=== Key Categorical Fields ===\n")
 # Profile every categorical field your analysis will use
-key_cats <- c("deceased", "gender", "scd", "shah_class")  # Customize
+key_cats <- c("deceased", "gender", "has_condition", "risk_group")  # Customize
 for (col in intersect(key_cats, names(data))) {
   cat("\n", col, " (class:", paste(class(data[[col]]), collapse = ","), "):\n")
   print(table(data[[col]], useNA = "ifany"))

@@ -1,0 +1,102 @@
+---
+title: "The hammer and the lens"
+description: "AI amplifies coders and meta-thinkers differently. This site is written for the second."
+date: "2026-04-23"
+categories: [framing, workflow]
+---
+
+There are two ways people approach a hard problem. Some reach for code
+— they see the problem as a target for craft, and the question is
+*which algorithm, which library, which pattern*. Call that the hammer.
+Others reach for framing — they see the problem as an object to
+decompose, and the question is *what is actually being asked, what
+would a good answer look like, where does judgment enter*. Call that
+the lens.
+
+Neither is better. Both solve real problems. But they're different
+kinds of leverage, and AI amplifies them differently.
+
+## The coder gets a faster hammer
+
+A skilled coder using AI gets a tighter loop: the model drafts, the
+coder reviews, the coder ships. Impressive but continuous — the same
+work they were doing before, just more of it per hour. The skills that
+made them valuable before (taste, language fluency, debugging
+intuition) are the skills that make the AI partnership valuable now.
+
+## The meta-thinker gets a different job
+
+A skilled meta-thinker using AI gets something stranger. The AI does
+the typing. The human stays at the level where framing, noticing, and
+verification happen — which is exactly the level where the AI is still
+unreliable. The pairing isn't a productivity boost; it's a role swap.
+The meta-thinker's old job (describe the problem well enough that
+someone good could solve it) becomes the entire job. The "someone
+good" on the other end is now a tireless collaborator that types
+faster than you read.
+
+## It shows up in small moves
+
+Asked to write a Claude Code skill, the coder opens the docs and
+studies the schema. The meta-thinker says "generate a skill that does
+X, consistent with my `CLAUDE.md`" and reviews the output.
+
+Asked to migrate 200 records, the coder writes a careful migration
+script. The meta-thinker writes a *spec* of the migration —
+invariants, edge cases, what "success" means — and lets the tool
+produce the script.
+
+Both finish the job. What differs is where the human's attention was
+spent, and what the human has *learned* by the time it's over. The
+coder got stronger at coding. The meta-thinker got stronger at
+specifying.
+
+## Who this site is written for
+
+If your hammer is code, plenty of sites will sharpen it — prompt
+libraries, syntax guides, "my favorite tricks." That's not what's
+here.
+
+These posts are written for the meta-thinker using AI. The advice posts
+are about habits that make framing hold up: verify before trusting,
+one idea per prompt, keep the spec small enough to fit in your head.
+The posts practice the move —
+not "write this function" but "decide what should be written, then
+have it written."
+
+In 2026 the same distinction applies to agentic tools (computer use,
+dynamic workflows, Artifacts that persist and call models). The coder
+gets a faster pair of hands on the keyboard and screen. The meta-thinker
+gets a collaborator that can traverse a targets DAG, read schema
+contracts, propose a tar_target, and even click through the verification
+steps — provided the human still owns the framing ("what must be true
+for this change to be safe?"), the provenance tag, and the final
+decision recorded in the registry. The guides on this site practice
+directing and verifying exactly that kind of work.
+
+The mid-2026 models sharpen the distinction rather than blur it. Claude
+Fable 5 (June 2026) is explicitly tuned to take a full task specification
+up front and run autonomously for hours against it; Claude Code's `/goal`
+keeps an agent working until a stated completion condition holds; managed
+agents accept a gradeable rubric and iterate against it. Every one of
+these rewards exactly the meta-thinker's skill — the quality of the
+upfront spec and the checkability of the success criteria — and punishes
+the habit of steering turn by turn. The spec *is* the input now.
+
+Grok Build (xAI's terminal coding agent, launched May 2026) is
+particularly well-suited to the lens side of this equation. It reads the
+same project rule formats — CLAUDE.md, .claude/rules, skills, hooks, MCP
+configs — that power rigorous setups like ClinicalDataProject, with zero
+configuration, alongside its native AGENTS.md convention. It spawns typed
+subagents in parallel (with git worktree isolation), maintains todo lists
+for multi-step provenance work, and orchestrates verification across
+tools (web search, terminal for tar commands and schema checks, file
+operations for _targets.R and data dictionaries). You can use its plan
+mode for safe read-only exploration of a DAG before any changes, and its
+subagent system for parallel reviews — one agent checks assumptions,
+another validates against the live registry, another searches for recent
+agentic-pattern gotchas. This turns the meta-thinker into a conductor of
+specialized AI collaborators rather than a solo reviewer of one model's
+output.
+
+If that's your leverage, you're in the right place.

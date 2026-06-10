@@ -12,7 +12,7 @@ TxtArchive creates text-based archives of codebases optimized for LLM analysis. 
 
 - Jupyter notebooks are JSON files with deeply nested structure. LLMs struggle to produce valid `.ipynb` JSON reliably.
 - Sharing a directory of analysis files with an LLM requires flattening multiple files into a single context.
-- Transferring notebooks between environments (local, remote servers, HealtheDataLabs) is friction-heavy.
+- Transferring notebooks between environments (local, remote secure servers, or analysis platforms) is friction-heavy.
 
 ### The Solution
 
@@ -250,7 +250,7 @@ Open `110-EDA.ipynb` in Jupyter, run cells, iterate.
 
 ## 6) Workflow: Transfer Notebooks to a Remote Environment
 
-For copying notebooks to HealtheDataLabs or other remote Jupyter servers where you can't easily `git clone`.
+For copying notebooks to remote secure Jupyter servers or analysis platforms where you can't easily `git clone`.
 
 ### Outbound (Local to Remote)
 
