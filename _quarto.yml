@@ -90,6 +90,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
+    include-in-header: goatcounter.html
     toc: true
     toc-depth: 3
     toc-location: left
