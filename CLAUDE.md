@@ -12,7 +12,7 @@ The separate private `/projects/gptserpa` repo is a **drafting space only** — 
 
 This is a **public** repository. It must NOT contain:
 - Personal project details or employer-specific information
-- IU Health references (names, emails like hnelson3@iuhealth.org, server names, workspace URLs)
+- Employer/organization references (names, work emails, server names, workspace URLs)
 - Databricks workspace IDs, PAT tokens, or internal infrastructure details
 - Any PHI or clinical data references
 
