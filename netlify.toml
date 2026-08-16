@@ -1,3 +1,14 @@
 [build]
   command = "bash build.sh"
   publish = "_site"
+
+# Unpublished 2026-08-16 — on-prem GPU / hospital-infra post pulled from the public site.
+[[redirects]]
+  from = "/advice/onprem-h100-openshift-clinical-ai"
+  to = "/advice/"
+  status = 301
+
+[[redirects]]
+  from = "/advice/onprem-h100-openshift-clinical-ai.html"
+  to = "/advice/"
+  status = 301

@@ -40,16 +40,13 @@ real work, then got cleaned up so you can reuse them.
 ::: {.grid .sherpa-card-grid}
 
 ::: {.g-col-12 .sherpa-card}
-### New — Running 8× H100 on-prem for clinical AI *(July 2026)*
+### New — The rubric is the new prompt *(June 2026)*
 
-Eight NVIDIA H100s inside a hospital firewall, running open LLMs on clinical
-data that legally cannot leave the building. The hardware is the easy part —
-the real engineering is a **three-location PHI-residency design** (cluster =
-notes, jump box = structured PHI, laptop = none) and serving through an
-OpenAI-compatible vLLM endpoint so downstream tools never touch the platform
-underneath.
+Mid-2026 agents iterate against a definition of done. The highest-leverage
+skill is no longer a clever prompt — it is a **checkable rubric** the
+harness can score without you in the loop.
 
-[Read the full post →](advice/onprem-h100-openshift-clinical-ai.qmd) ·
+[Read the full post →](advice/the-rubric-is-the-new-prompt.qmd) ·
 [Browse all advice →](advice/index.qmd)
 :::
 
@@ -169,8 +166,6 @@ explicit data-design registries and validation gates.
 ::: {.g-col-12 .g-col-md-6 .sherpa-card}
 ### Advice — opinionated, dated, one idea each
 
-- [Running 8× H100 on-prem for clinical AI](advice/onprem-h100-openshift-clinical-ai.qmd) —
-  on-prem GPUs + OpenShift AI + a three-location PHI-residency design.
 - [The rubric is the new prompt](advice/the-rubric-is-the-new-prompt.qmd) —
   mid-2026 agents iterate against a definition of done; write checkable criteria.
 - [Verify before trusting](advice/verify-before-trusting.qmd) — the single most
