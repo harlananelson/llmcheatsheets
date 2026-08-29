@@ -91,16 +91,12 @@ response = client.get_models()
 models = sorted(response.get("response", []))
 ```
 
-### Available Models (as of 2026-03)
+### Available models — live catalog, not a table
 
-| Model ID | Short Name | Notes |
-|----------|------------|-------|
-| `google-claude-46-opus` | claude-opus | Anthropic's strongest model |
-| `gpt-5.2` | gpt5 | OpenAI's flagship multimodal |
-| `xai-grok` | grok | xAI Grok, detailed analysis |
-| `google-gemini-2.5-pro` | gemini | Google's latest, long context |
-
-Use `--list-models` with `asksage_review.py` for the current full list.
+IDs churn. The source of truth is `model_panel.py` (one flagship text model per
+foundation-model company from `client.get_models()`). `asksage_review.py --list-models`
+prints that panel, then the full catalog. `batch_review.py` with no `--models` uses the
+same picker. Do not copy a dated ID table into a skill or script.
 
 ---
 
@@ -249,7 +245,7 @@ positional arguments:
   path                  File or directory to review
 
 options:
-  --model, -m MODEL     AskSage model (default: xai-grok)
+  --model, -m MODEL     AskSage model (default: live Anthropic flagship)
   --prompt, -p PROMPT   Custom review prompt (replaces default)
   --list-models         List available models and exit
   --temperature, -t     Model temperature (default: 0.0)
@@ -272,7 +268,7 @@ positional arguments:
 
 options:
   --models MODELS       Comma-separated model list
-                        (default: google-claude-46-opus,gpt-5.2,xai-grok,google-gemini-2.5-pro)
+                        (default: live panel from model_panel.py)
   --prompt PROMPT       Review prompt (prepended to file content)
   --prompt-file FILE    Read prompt from a file
   --config CONFIG       YAML config with per-file prompts
@@ -375,7 +371,7 @@ If response.get("message") is very short:
 ```
 - Run: python asksage_review.py --list-models
 - Model IDs change as AskSage updates their platform
-- Common current IDs: google-claude-46-opus, gpt-5.2, xai-grok, google-gemini-2.5-pro
+- Copy an ID from `model_panel.py` / `--list-models` (do not reuse a dated table)
 ```
 
 ---
