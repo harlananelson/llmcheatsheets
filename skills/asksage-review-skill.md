@@ -74,7 +74,7 @@ The primary method for sending prompts to models.
 ```python
 response = client.query(
     message=full_prompt,      # str — the full prompt text
-    model="google-claude-46-opus",    # str — model identifier
+    model="google-claude-opus-5",    # str — copy from live --list-models, not a dated table
     temperature=0.0,          # float — 0.0 for deterministic reviews
     dataset="none",           # str — "none" for no RAG dataset
 )
@@ -132,11 +132,11 @@ size by ~80%.
 # Using batch_review.py
 python batch_review.py ./markdown_dir/ ./reviews/
 
-# Or per-file with asksage_review.py
-python asksage_review.py analysis.md --model google-claude-46-opus -o review-claude.md
-python asksage_review.py analysis.md --model gpt-5.2 -o review-gpt5.md
-python asksage_review.py analysis.md --model xai-grok -o review-grok.md
-python asksage_review.py analysis.md --model google-gemini-2.5-pro -o review-gemini.md
+# Or per-file with asksage_review.py — copy ids from --list-models / model_panel.py
+python asksage_review.py analysis.md --model google-claude-opus-5 -o review-anthropic.md
+python asksage_review.py analysis.md --model gpt-5.6-terra -o review-openai.md
+python asksage_review.py analysis.md --model google-gemini-3.1-pro-com -o review-google.md
+# Grok is not an AskSage panel seat — call the native xAI wrapper instead.
 ```
 
 ### Step 4: Synthesize Cross-Model Reviews
@@ -316,10 +316,11 @@ analyses:
 
 ```
 reviews/
-├── {filename}-review-claude-opus.md
-├── {filename}-review-gpt5.md
-├── {filename}-review-grok.md
-├── {filename}-review-gemini.md
+├── {filename}-review-anthropic.md
+├── {filename}-review-openai.md
+├── {filename}-review-google.md
+├── {filename}-review-mistral.md
+├── {filename}-review-deepseek.md
 └── {filename}-synthesis.md          # Cross-model synthesis (manual)
 ```
 
@@ -400,11 +401,11 @@ client = AskSageClient(
     api_key=os.environ["ASKSAGE_API_KEY"],
 )
 
+# Do not freeze this list. Prefer model_panel.select_panel(client.get_models()["response"]).
 MODELS = [
-    ("google-claude-46-opus", "claude-opus"),
-    ("xai-grok", "grok"),
-    ("gpt-5.2", "gpt5"),
-    ("google-gemini-2.5-pro", "gemini"),
+    ("google-claude-opus-5", "anthropic"),
+    ("gpt-5.6-terra", "openai"),
+    ("google-gemini-3.1-pro-com", "google"),
 ]
 
 PROMPT = """Your review prompt here.
