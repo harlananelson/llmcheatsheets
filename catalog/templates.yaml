@@ -1,0 +1,72 @@
+# Quarto Kit template catalog — source of truth.
+# Edit this file, then run: python3 scripts/qk update-docs
+# Propose new entries via PR. Do not auto-merge external candidates.
+# License: documentation CC BY-SA 4.0 (LICENSE); code MIT (LICENSE-CODE).
+# PHI: never commit PHI; use mock or de-identified data only.
+
+version: 1
+templates:
+  - id: claude-md-global
+    title: Global CLAUDE.md
+    description: >
+      Cross-project Claude Code context for ~/projects (or similar root).
+      Covers txtarchive, analysis numbering, Quarto pointers, and ontology
+      bootstrap conventions. Copy to your projects root and fill placeholders.
+    path: templates/claude-md-global.md
+    tags: [claude-code, bootstrap, markdown]
+    kind: file
+    when_to_use: >
+      New machine setup or when establishing shared global Claude Code context
+      across multiple projects.
+
+  - id: claude-md-project
+    title: Project CLAUDE.md
+    description: >
+      Project-level CLAUDE.md scaffold with data sources, key outcome, analysis
+      progression, packages, gotchas, profiling protocol, and review checklist.
+      Placeholders use {ALL_CAPS} form.
+    path: templates/claude-md-project.md
+    tags: [claude-code, bootstrap, markdown, project]
+    kind: file
+    when_to_use: >
+      Starting or upgrading a project that needs a short, decision-oriented
+      CLAUDE.md (not a dump of reference material).
+
+  - id: settings-local-project
+    title: Project settings.local.json
+    description: >
+      Minimal Claude Code project permissions allow-list (WebSearch, git, gh,
+      txtarchive). Copy to .claude/settings.local.json and tighten for the
+      project stack (R, Python, or minimal).
+    path: templates/settings-local-project.json
+    tags: [claude-code, bootstrap, json, permissions]
+    kind: file
+    when_to_use: >
+      Bootstrapping .claude/ permissions for a new or older project.
+
+  - id: ontology-scaffold
+    title: Ontology scaffold
+    description: >
+      Directory template for ontology-driven Claude Code configuration:
+      CLAUDE.md.template plus rules/ (schema, constraints, assumptions,
+      authority scoring, method tree, validation gates, output conventions).
+      Replace {PLACEHOLDERS} after install.
+    path: templates/ontology-scaffold
+    tags: [claude-code, ontology, scaffold, directory]
+    kind: directory
+    when_to_use: >
+      When a project outgrows a flat CLAUDE.md and needs typed constraints,
+      assumption tracking, and validation gates (architecture review Level 1+).
+
+  - id: research-paper-starter-pack
+    title: Research paper starter pack
+    description: >
+      Quarto manuscript starter (ZIP + README) wired for DOCX/PDF with
+      manuscript.yml, section includes, BibTeX, and CSL placeholder. Unzip,
+      replace CSL/journal reference as needed, then quarto render.
+    path: templates/research-paper-starter-pack
+    tags: [quarto, manuscript, research, directory]
+    kind: directory
+    when_to_use: >
+      Starting a Quarto research paper / manuscript with citation and
+      multi-format output scaffolding.

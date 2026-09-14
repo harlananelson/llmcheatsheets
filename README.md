@@ -9,10 +9,11 @@ Guides, templates, and cheatsheets for working with LLMs on data analysis, Quart
 | Directory | Contents |
 |-----------|----------|
 | [`guides/`](guides/) | Claude Code setup, architecture review, Copilot primer, LLM usage patterns, ontology website pattern |
-| [`skills/`](skills/) | Skill references: Quarto authoring, txtarchive workflows, ontology website builder (load into an LLM) |
+| [`skills/`](skills/) | Skill references: Quarto authoring, txtarchive workflows, ontology website builder, Quarto kit (load into an LLM) |
 | [`cheatsheets/`](cheatsheets/) | Rendered Quarto cheatsheet (HTML) |
-| [`templates/`](templates/) | Starter files for CLAUDE.md, settings.local.json, research papers |
-| [`scripts/`](scripts/) | CI helper scripts |
+| [`templates/`](templates/) | Starter files for CLAUDE.md, settings.local.json, research papers, ontology scaffold |
+| [`catalog/`](catalog/) | Reviewable template catalog (`templates.yaml` source of truth + generated `TEMPLATES.md`) |
+| [`scripts/`](scripts/) | CI helpers and Quarto Kit CLI (`scripts/qk`) |
 
 ---
 
@@ -196,6 +197,54 @@ Start from [`templates/research-paper-starter-pack/`](templates/research-paper-s
 - **Worked example:** The [Knowledge Vault](guides/knowledge-vault.md) demonstrates the full pattern with 5 rules files, mode selection, and LLM boundary.
 
 ---
+
+
+---
+
+## Quarto Kit (template catalog + CLI + skill)
+
+Single reviewable source documents the templates in this repo. Both the CLI and the agent skill consume it — no hardcoded inventory.
+
+| Piece | Path |
+|-------|------|
+| Source of truth | [`catalog/templates.yaml`](catalog/templates.yaml) |
+| Generated catalog | [`catalog/TEMPLATES.md`](catalog/TEMPLATES.md) |
+| CLI | [`scripts/qk`](scripts/qk) |
+| Skill | [`skills/quarto-kit-skill.md`](skills/quarto-kit-skill.md) |
+| Draft candidates | [`catalog/drafts/`](catalog/drafts/) (human review only) |
+
+### Try the CLI
+
+```bash
+python3 scripts/qk list
+python3 scripts/qk list --tag quarto
+python3 scripts/qk show research-paper-starter-pack
+python3 scripts/qk install research-paper-starter-pack /tmp/demo
+python3 scripts/qk check
+python3 scripts/qk update-docs
+```
+
+`install` refuses to overwrite an existing destination unless you pass `--force`.
+
+### Agent skill
+
+Load [`skills/quarto-kit-skill.md`](skills/quarto-kit-skill.md). It mirrors CLI operations and always loads `catalog/templates.yaml` rather than memorizing IDs.
+
+### Contribute / expand the catalog
+
+1. Edit `catalog/templates.yaml` (add `id`, `title`, `description`, `path`, `tags`, `kind`, `when_to_use`).
+2. Ensure the `path` exists under `templates/`.
+3. Run `python3 scripts/qk update-docs` then `python3 scripts/qk check`.
+4. Open a PR. CI runs `scripts/qk check` and fails if `TEMPLATES.md` is out of sync.
+
+Optional: propose external candidates from [awesome-quarto](https://github.com/mcanouil/awesome-quarto) for review:
+
+```bash
+python3 scripts/qk import-candidates
+# writes a DRAFT under catalog/drafts/ — never auto-merged into templates.yaml
+```
+
+Promote selected drafts in a separate human-reviewed PR only.
 
 ## Licenses
 
