@@ -1,0 +1,16 @@
+name: Quarto kit catalog check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  catalog-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Quarto kit catalog check
+        run: |
+          set -euo pipefail
+          python3 scripts/qk check

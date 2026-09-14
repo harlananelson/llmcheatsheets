@@ -198,9 +198,6 @@ Start from [`templates/research-paper-starter-pack/`](templates/research-paper-s
 
 ---
 
-
----
-
 ## Quarto Kit (template catalog + CLI + skill)
 
 Single reviewable source documents the templates in this repo. Both the CLI and the agent skill consume it — no hardcoded inventory.
