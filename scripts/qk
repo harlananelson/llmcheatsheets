@@ -1,0 +1,529 @@
+#!/usr/bin/env python3
+"""qk — Quarto Kit CLI for the llmcheatsheets template catalog.
+
+Source of truth: catalog/templates.yaml
+Generated docs:  catalog/TEMPLATES.md
+
+License: MIT (LICENSE-CODE). Docs: CC BY-SA 4.0 (LICENSE).
+Do not commit PHI.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import hashlib
+import json
+import os
+import re
+import shutil
+import sys
+import urllib.error
+import urllib.request
+from pathlib import Path
+from typing import Any
+
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+CATALOG_YAML = REPO_ROOT / "catalog" / "templates.yaml"
+CATALOG_MD = REPO_ROOT / "catalog" / "TEMPLATES.md"
+DRAFTS_DIR = REPO_ROOT / "catalog" / "drafts"
+AWESOME_QUARTO_README = (
+    "https://raw.githubusercontent.com/mcanouil/awesome-quarto/main/README.md"
+)
+
+
+# ---------------------------------------------------------------------------
+# Minimal YAML subset loader (stdlib only) for this catalog schema.
+# Supports: comments, scalars, >, | blocks, nested mappings under list items,
+# and flow sequences [a, b]. Not a general YAML parser.
+# ---------------------------------------------------------------------------
+
+def _parse_scalar(raw: str) -> Any:
+    s = raw.strip()
+    if not s or s == "~" or s.lower() == "null":
+        return None
+    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+        return s[1:-1]
+    if s.startswith("[") and s.endswith("]"):
+        inner = s[1:-1].strip()
+        if not inner:
+            return []
+        return [part.strip().strip("\"'") for part in inner.split(",")]
+    if re.fullmatch(r"-?\d+", s):
+        return int(s)
+    if s.lower() in ("true", "false"):
+        return s.lower() == "true"
+    return s
+
+
+def load_catalog_yaml(path: Path) -> dict[str, Any]:
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    root: dict[str, Any] = {}
+    templates: list[dict[str, Any]] = []
+    i = 0
+    n = len(lines)
+
+    def skip_blanks_and_comments(idx: int) -> int:
+        while idx < n:
+            stripped = lines[idx].strip()
+            if not stripped or stripped.startswith("#"):
+                idx += 1
+                continue
+            break
+        return idx
+
+    i = skip_blanks_and_comments(0)
+    while i < n:
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            i += 1
+            continue
+
+        if stripped == "templates:":
+            i += 1
+            while i < n:
+                i = skip_blanks_and_comments(i)
+                if i >= n:
+                    break
+                line = lines[i]
+                if not line.startswith(" ") and not line.startswith("\t"):
+                    break
+                m = re.match(r"^  - id:\s*(.+)$", line)
+                if not m:
+                    # unexpected indent at templates level
+                    if re.match(r"^[^\s]", line):
+                        break
+                    i += 1
+                    continue
+                item: dict[str, Any] = {"id": _parse_scalar(m.group(1))}
+                i += 1
+                while i < n:
+                    line = lines[i]
+                    if re.match(r"^  - id:\s*", line) or (
+                        line.strip()
+                        and not line.startswith(" ")
+                        and not line.startswith("\t")
+                        and not line.strip().startswith("#")
+                    ):
+                        break
+                    if not line.strip() or line.strip().startswith("#"):
+                        i += 1
+                        continue
+                    km = re.match(r"^    ([A-Za-z0-9_]+):\s*(.*)$", line)
+                    if not km:
+                        i += 1
+                        continue
+                    key, rest = km.group(1), km.group(2)
+                    if rest in (">", "|"):
+                        fold = rest == ">"
+                        block_lines: list[str] = []
+                        i += 1
+                        while i < n:
+                            bl = lines[i]
+                            if bl.startswith("      ") or bl.startswith("\t\t"):
+                                block_lines.append(bl[6:] if bl.startswith("      ") else bl.lstrip("\t"))
+                                i += 1
+                            elif not bl.strip():
+                                block_lines.append("")
+                                i += 1
+                            else:
+                                break
+                        if fold:
+                            # folded: join non-empty with spaces; blank lines -> paragraph break
+                            paras: list[str] = []
+                            cur: list[str] = []
+                            for bl in block_lines:
+                                if bl.strip() == "":
+                                    if cur:
+                                        paras.append(" ".join(cur))
+                                        cur = []
+                                else:
+                                    cur.append(bl.strip())
+                            if cur:
+                                paras.append(" ".join(cur))
+                            item[key] = "\n\n".join(paras).strip()
+                        else:
+                            item[key] = "\n".join(block_lines).rstrip("\n")
+                        continue
+                    item[key] = _parse_scalar(rest)
+                    i += 1
+                templates.append(item)
+            root["templates"] = templates
+            continue
+
+        km = re.match(r"^([A-Za-z0-9_]+):\s*(.*)$", stripped)
+        if km:
+            root[km.group(1)] = _parse_scalar(km.group(2))
+            i += 1
+            continue
+        i += 1
+
+    if "templates" not in root:
+        root["templates"] = templates
+    return root
+
+
+def require_catalog() -> dict[str, Any]:
+    if not CATALOG_YAML.is_file():
+        sys.stderr.write(f"error: catalog not found: {CATALOG_YAML}\n")
+        sys.exit(1)
+    data = load_catalog_yaml(CATALOG_YAML)
+    if not isinstance(data.get("templates"), list):
+        sys.stderr.write("error: catalog/templates.yaml missing templates list\n")
+        sys.exit(1)
+    return data
+
+
+def find_template(templates: list[dict[str, Any]], tid: str) -> dict[str, Any] | None:
+    for t in templates:
+        if t.get("id") == tid:
+            return t
+    return None
+
+
+def render_templates_md(data: dict[str, Any]) -> str:
+    lines = [
+        "# Template Catalog",
+        "",
+        "> **Generated file.** Do not edit by hand.",
+        "> Source of truth: [`catalog/templates.yaml`](templates.yaml).",
+        "> Regenerate with: `python3 scripts/qk update-docs`",
+        "",
+        "Reviewable via pull request. Candidates from external lists belong under",
+        "`catalog/drafts/` until a human promotes them into `templates.yaml`.",
+        "",
+        "| ID | Title | Kind | Path | Tags |",
+        "|----|-------|------|------|------|",
+    ]
+    for t in data["templates"]:
+        tags = t.get("tags") or []
+        if isinstance(tags, str):
+            tags = [tags]
+        tag_s = ", ".join(f"`{x}`" for x in tags)
+        lines.append(
+            f"| `{t.get('id','')}` | {t.get('title','')} | {t.get('kind','')} | "
+            f"`{t.get('path','')}` | {tag_s} |"
+        )
+    lines.append("")
+    for t in data["templates"]:
+        lines.append(f"## `{t.get('id','')}` — {t.get('title','')}")
+        lines.append("")
+        lines.append(f"- **Path:** `{t.get('path','')}`")
+        lines.append(f"- **Kind:** `{t.get('kind','')}`")
+        tags = t.get("tags") or []
+        if isinstance(tags, str):
+            tags = [tags]
+        lines.append(f"- **Tags:** {', '.join(f'`{x}`' for x in tags) if tags else '—'}")
+        lines.append("")
+        desc = (t.get("description") or "").strip()
+        if desc:
+            lines.append(desc)
+            lines.append("")
+        wtu = (t.get("when_to_use") or "").strip()
+        if wtu:
+            lines.append(f"**When to use:** {wtu}")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def cmd_list(args: argparse.Namespace) -> int:
+    data = require_catalog()
+    tag = args.tag
+    rows = []
+    for t in data["templates"]:
+        tags = t.get("tags") or []
+        if isinstance(tags, str):
+            tags = [tags]
+        if tag and tag not in tags:
+            continue
+        rows.append(t)
+    if not rows:
+        print("No templates matched." if tag else "Catalog is empty.")
+        return 0
+    width = max(len(str(t.get("id", ""))) for t in rows)
+    for t in rows:
+        tags = t.get("tags") or []
+        if isinstance(tags, str):
+            tags = [tags]
+        print(f"{str(t.get('id','')).ljust(width)}  {t.get('title','')}  [{', '.join(tags)}]")
+    return 0
+
+
+def cmd_show(args: argparse.Namespace) -> int:
+    data = require_catalog()
+    t = find_template(data["templates"], args.id)
+    if not t:
+        sys.stderr.write(f"error: unknown template id: {args.id}\n")
+        return 1
+    tags = t.get("tags") or []
+    if isinstance(tags, str):
+        tags = [tags]
+    print(f"id:          {t.get('id')}")
+    print(f"title:       {t.get('title')}")
+    print(f"kind:        {t.get('kind')}")
+    print(f"path:        {t.get('path')}")
+    print(f"tags:        {', '.join(tags)}")
+    print()
+    print("description:")
+    print((t.get("description") or "").strip())
+    print()
+    print("when_to_use:")
+    print((t.get("when_to_use") or "").strip())
+    return 0
+
+
+def _dest_occupied(dest: Path) -> bool:
+    return dest.exists()
+
+
+def cmd_install(args: argparse.Namespace) -> int:
+    data = require_catalog()
+    t = find_template(data["templates"], args.id)
+    if not t:
+        sys.stderr.write(f"error: unknown template id: {args.id}\n")
+        return 1
+    rel = t.get("path")
+    if not rel:
+        sys.stderr.write(f"error: template {args.id} missing path\n")
+        return 1
+    src = REPO_ROOT / rel
+    if not src.exists():
+        sys.stderr.write(f"error: source missing on disk: {src}\n")
+        return 1
+
+    kind = t.get("kind") or ("directory" if src.is_dir() else "file")
+    if args.dest:
+        dest = Path(args.dest).expanduser().resolve()
+    else:
+        # default: current working directory / basename
+        dest = (Path.cwd() / src.name).resolve()
+
+    if kind == "directory" or src.is_dir():
+        if dest.exists():
+            if not args.force:
+                sys.stderr.write(
+                    f"error: destination exists (refuse overwrite without --force): {dest}\n"
+                )
+                return 1
+            if dest.is_dir():
+                shutil.rmtree(dest)
+            else:
+                dest.unlink()
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(src, dest)
+        print(f"Installed directory template '{args.id}' -> {dest}")
+        return 0
+
+    # file
+    if dest.exists() and dest.is_dir():
+        dest = dest / src.name
+    if dest.exists() and not args.force:
+        sys.stderr.write(
+            f"error: destination exists (refuse overwrite without --force): {dest}\n"
+        )
+        return 1
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    print(f"Installed file template '{args.id}' -> {dest}")
+    return 0
+
+
+def cmd_update_docs(_: argparse.Namespace) -> int:
+    data = require_catalog()
+    CATALOG_MD.parent.mkdir(parents=True, exist_ok=True)
+    CATALOG_MD.write_text(render_templates_md(data), encoding="utf-8")
+    print(f"Wrote {CATALOG_MD.relative_to(REPO_ROOT)}")
+    return 0
+
+
+def cmd_check(_: argparse.Namespace) -> int:
+    data = require_catalog()
+    errors: list[str] = []
+    ids: set[str] = set()
+    for t in data["templates"]:
+        tid = t.get("id")
+        if not tid:
+            errors.append("template missing id")
+            continue
+        if tid in ids:
+            errors.append(f"duplicate id: {tid}")
+        ids.add(tid)
+        for req in ("title", "description", "path", "tags", "kind", "when_to_use"):
+            if req not in t or t[req] in (None, ""):
+                errors.append(f"{tid}: missing {req}")
+        kind = t.get("kind")
+        if kind not in ("file", "directory"):
+            errors.append(f"{tid}: kind must be file|directory (got {kind!r})")
+        rel = t.get("path")
+        if rel:
+            src = REPO_ROOT / rel
+            if not src.exists():
+                errors.append(f"{tid}: path does not exist: {rel}")
+            elif kind == "file" and not src.is_file():
+                errors.append(f"{tid}: kind=file but path is not a file: {rel}")
+            elif kind == "directory" and not src.is_dir():
+                errors.append(f"{tid}: kind=directory but path is not a directory: {rel}")
+
+    expected = render_templates_md(data)
+    if not CATALOG_MD.is_file():
+        errors.append("catalog/TEMPLATES.md missing; run: python3 scripts/qk update-docs")
+    else:
+        actual = CATALOG_MD.read_text(encoding="utf-8")
+        if actual != expected:
+            errors.append(
+                "catalog/TEMPLATES.md out of sync with templates.yaml; "
+                "run: python3 scripts/qk update-docs"
+            )
+
+    if errors:
+        for e in errors:
+            sys.stderr.write(f"error: {e}\n")
+        return 1
+    print("ok: catalog consistent")
+    return 0
+
+
+def _slugify(text: str) -> str:
+    s = re.sub(r"[^a-zA-Z0-9]+", "-", text.strip().lower()).strip("-")
+    return s[:60] or "candidate"
+
+
+def cmd_import_candidates(args: argparse.Namespace) -> int:
+    """Fetch awesome-quarto README and write a DRAFT for human review only."""
+    url = args.url or AWESOME_QUARTO_README
+    print(f"Fetching candidates from {url} ...")
+    try:
+        with urllib.request.urlopen(url, timeout=60) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+    except urllib.error.URLError as exc:
+        sys.stderr.write(f"error: failed to fetch: {exc}\n")
+        return 1
+
+    # Collect markdown link lines that look like project entries.
+    # Never write into templates.yaml — drafts only.
+    link_re = re.compile(r"^\s*[-*]\s+\[([^\]]+)\]\((https?://[^)]+)\)\s*[—\-–:]?\s*(.*)$")
+    candidates: list[dict[str, str]] = []
+    for line in body.splitlines():
+        m = link_re.match(line)
+        if not m:
+            continue
+        title, href, desc = m.group(1).strip(), m.group(2).strip(), m.group(3).strip()
+        # Prefer Quarto-related github/template-ish links
+        low = f"{title} {desc} {href}".lower()
+        if "quarto" not in low and "github.com" not in href.lower():
+            continue
+        candidates.append(
+            {
+                "id": _slugify(title),
+                "title": title,
+                "url": href,
+                "description": desc or title,
+            }
+        )
+
+    DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    out = DRAFTS_DIR / f"awesome-quarto-candidates-{stamp}.md"
+    lines = [
+        "# DRAFT: awesome-quarto candidates (human review only)",
+        "",
+        f"- Source: {url}",
+        f"- Fetched (UTC): {stamp}",
+        f"- Count: {len(candidates)}",
+        "",
+        "**Do not auto-merge.** Promote selected entries into `catalog/templates.yaml`",
+        "via a separate PR after verifying license, PHI safety, and fit.",
+        "",
+        "| Proposed id | Title | URL | Notes |",
+        "|-------------|-------|-----|-------|",
+    ]
+    for c in candidates:
+        note = (c["description"] or "").replace("|", "\\|")
+        lines.append(
+            f"| `{c['id']}` | {c['title']} | {c['url']} | {note} |"
+        )
+    lines.append("")
+    lines.append("## Raw candidate YAML stubs (for copy/paste after review)")
+    lines.append("")
+    lines.append("```yaml")
+    for c in candidates[:50]:
+        lines.append(f"  - id: {c['id']}")
+        lines.append(f"    title: {c['title']}")
+        lines.append(f"    description: >")
+        lines.append(f"      DRAFT from awesome-quarto. {c['description']}")
+        lines.append(f"      Upstream: {c['url']}")
+        lines.append(f"    path: templates/TODO-{c['id']}")
+        lines.append(f"    tags: [quarto, draft, external]")
+        lines.append(f"    kind: directory")
+        lines.append(f"    when_to_use: >")
+        lines.append(f"      DRAFT — fill in after human review.")
+        lines.append("")
+    lines.append("```")
+    lines.append("")
+    out.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Wrote DRAFT (not merged): {out.relative_to(REPO_ROOT)}")
+    print("Open a PR to promote selected stubs into catalog/templates.yaml.")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="qk",
+        description="Quarto Kit CLI — list/show/install templates from catalog/templates.yaml",
+    )
+    sub = p.add_subparsers(dest="command", required=True)
+
+    p_list = sub.add_parser("list", help="List catalog templates")
+    p_list.add_argument("--tag", help="Filter by tag")
+    p_list.set_defaults(func=cmd_list)
+
+    p_show = sub.add_parser("show", help="Show one template by id")
+    p_show.add_argument("id")
+    p_show.set_defaults(func=cmd_show)
+
+    p_install = sub.add_parser("install", help="Copy a template to a destination")
+    p_install.add_argument("id")
+    p_install.add_argument(
+        "dest",
+        nargs="?",
+        default=None,
+        help="Destination path (default: ./<basename> under cwd)",
+    )
+    p_install.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing destination",
+    )
+    p_install.set_defaults(func=cmd_install)
+
+    p_check = sub.add_parser("check", help="Validate catalog and TEMPLATES.md sync")
+    p_check.set_defaults(func=cmd_check)
+
+    p_upd = sub.add_parser("update-docs", help="Regenerate catalog/TEMPLATES.md from YAML")
+    p_upd.set_defaults(func=cmd_update_docs)
+
+    p_imp = sub.add_parser(
+        "import-candidates",
+        help="Fetch awesome-quarto README into catalog/drafts/ (human review only)",
+    )
+    p_imp.add_argument(
+        "--url",
+        default=None,
+        help="Override source README URL",
+    )
+    p_imp.set_defaults(func=cmd_import_candidates)
+
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    return int(args.func(args))
+
+
+if __name__ == "__main__":
+    sys.exit(main())
