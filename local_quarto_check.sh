@@ -30,3 +30,10 @@ echo
 echo "=== DONE ==="
 ls -lh "$HTML_OUT" 2>/dev/null || true
 ls -lh "$PDF_OUT" 2>/dev/null || true
+
+# Quarto kit catalog consistency (templates.yaml <-> TEMPLATES.md)
+if [[ -x "scripts/qk" ]] || [[ -f "scripts/qk" ]]; then
+  echo "==> Quarto kit catalog check"
+  python3 scripts/qk check
+fi
+
