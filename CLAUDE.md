@@ -26,11 +26,12 @@ LLM reference library: guides, skills, cheatsheets, and templates.
 
 ```
 guides/                  # Markdown guides (Claude Code setup, Copilot primer, LLM usage, ontology website)
-skills/                  # Skill files loaded into LLMs (quarto-skill.md, txtarchive-skill.md, quarto-ontology-website-skill.md)
+skills/                  # Skill files loaded into LLMs (quarto-skill.qmd, txtarchive-skill.md, quarto-ontology-website-skill.md, quarto-kit-skill.md)
+catalog/                 # Quarto kit template catalog: templates.yaml (source of truth) + generated TEMPLATES.md (`scripts/qk check` enforces sync)
 cheatsheets/             # Rendered Quarto cheatsheet (.qmd + .html + support files)
 templates/               # Starter files (CLAUDE.md, settings.json, research paper scaffold)
 scripts/                 # CI helper scripts (ci_trigger, ci_logs, ci_tail, ci_wait_and_fetch)
-.github/workflows/       # render.yml -- renders cheatsheet on push to main
+.github/workflows/       # render.yml -- renders cheatsheet on push to main; catalog-check.yml -- runs scripts/qk check
 ```
 
 ## Editing Conventions
@@ -45,8 +46,9 @@ Changes to these files affect all projects (via global CLAUDE.md review-on-sessi
 
 - `guides/claude-code-setup.md` -- Configuration hierarchy, custom skills, custom agents, MCP connectors, new machine checklist
 - `guides/claude-code-architecture-review.md` -- Ontology-driven project organization, tiered framework
-- `skills/quarto-skill.qmd` -- Full Quarto reference (also installed as `~/.claude/skills/quarto/SKILL.md`)
-- `skills/txtarchive-skill.md` -- Full txtarchive reference (also installed as `~/.claude/skills/txtarchive/SKILL.md`)
+- `skills/quarto-skill.qmd` -- Full Quarto reference. The condensed global skill `~/.claude/skills/quarto/SKILL.md` is a separate file maintained in `~/projects/AI/claude-config/skills/quarto/` (deployed by its `deploy.sh`) and points here for the full reference; keep the two consistent.
+- `skills/txtarchive-skill.md` -- Full txtarchive reference. Same arrangement: the condensed global skill lives in `~/projects/AI/claude-config/skills/txtarchive/`.
+- `skills/quarto-kit-skill.md` + `catalog/templates.yaml` + `scripts/qk` -- Quarto kit. Edit the YAML, then run `python3 scripts/qk update-docs && python3 scripts/qk check`; CI (`catalog-check.yml`) fails if `TEMPLATES.md` is out of sync.
 - `templates/ontology-scaffold/` -- Level 1 project scaffolding templates
 
 When updating these files, note that the global CLAUDE.md at `/projects/CLAUDE.md` instructs Claude to check for relevant updates here at session start.
@@ -54,5 +56,7 @@ When updating these files, note that the global CLAUDE.md at `/projects/CLAUDE.m
 ## CI
 
 - `render.yml` renders `cheatsheets/quarto_llm_cheatsheet.qmd` to HTML on every push to main.
+- `catalog-check.yml` runs `python3 scripts/qk check` on every push and pull request.
+- Workflow files cannot be pushed with the stored `gh` OAuth token (no `workflow` scope); push those commits over SSH: `git push git@github.com:harlananelson/llmcheatsheets.git main`.
 - Validate locally with `./local_quarto_check.sh` before pushing.
 - CI helpers in `scripts/` (ci_trigger.sh, ci_logs.sh, ci_tail.sh, ci_wait_and_fetch.sh).
