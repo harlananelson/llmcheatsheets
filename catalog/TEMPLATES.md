@@ -7,13 +7,14 @@
 Reviewable via pull request. Candidates from external lists belong under
 `catalog/drafts/` until a human promotes them into `templates.yaml`.
 
-| ID | Title | Kind | Path | Tags |
+| ID | Title | Kind | Path / install | Tags |
 |----|-------|------|------|------|
 | `claude-md-global` | Global CLAUDE.md | file | `templates/claude-md-global.md` | `claude-code`, `bootstrap`, `markdown` |
 | `claude-md-project` | Project CLAUDE.md | file | `templates/claude-md-project.md` | `claude-code`, `bootstrap`, `markdown`, `project` |
 | `settings-local-project` | Project settings.local.json | file | `templates/settings-local-project.json` | `claude-code`, `bootstrap`, `json`, `permissions` |
 | `ontology-scaffold` | Ontology scaffold | directory | `templates/ontology-scaffold` | `claude-code`, `ontology`, `scaffold`, `directory` |
 | `research-paper-starter-pack` | Research paper starter pack | directory | `templates/research-paper-starter-pack` | `quarto`, `manuscript`, `research`, `directory` |
+| `atelier` | Atelier documentation-website project type (mcanouil/quarto-atelier) | extension-project-type | `quarto add mcanouil/quarto-atelier` | `quarto`, `extension`, `project-type`, `website`, `documentation`, `brand` |
 
 ## `claude-md-global` — Global CLAUDE.md
 
@@ -64,3 +65,41 @@ Directory template for ontology-driven Claude Code configuration: CLAUDE.md.temp
 Quarto manuscript starter (ZIP + README) wired for DOCX/PDF with manuscript.yml, section includes, BibTeX, and CSL placeholder. Unzip, replace CSL/journal reference as needed, then quarto render.
 
 **When to use:** Starting a Quarto research paper / manuscript with citation and multi-format output scaffolding.
+
+## `atelier` — Atelier documentation-website project type (mcanouil/quarto-atelier)
+
+- **Install:** `quarto add mcanouil/quarto-atelier`
+- **Kind:** `extension-project-type`
+- **Project type:** `atelier` (inherits `website`)
+- **Requires:** Quarto >= 1.9.36
+- **Source:** <https://github.com/mcanouil/quarto-atelier>
+- **Docs:** <https://mickael.canouil.fr/posts/2026-10-05-quarto-atelier-project-type/>
+- **Tags:** `quarto`, `extension`, `project-type`, `website`, `documentation`, `brand`
+
+Quarto extension by Mickaël Canouil that contributes the `atelier` project type, a `website` underneath. A site's _quarto.yml only needs `project: type: atelier` plus its title, URLs, and navbar. The extension supplies the footer, a light/dark theme driven by the site's _brand.yml, Open Graph and Twitter card tags, a search overlay in the navbar, llms.txt, page navigation, and accessibility scripts (skip link and fixes). Configuration and styling only; it carries no data.
+
+**When to use:** Standing up a documentation website with consistent chrome from a short _quarto.yml, or as the reference implementation when building your own extension-provided project type to share one configuration across many repos.
+
+Minimal `_quarto.yml`:
+
+```yaml
+project:
+  type: atelier
+
+website:
+  title: "My Site"
+  site-url: https://example.org/my-site
+  repo-url: https://github.com/example/my-site
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
+# Quarto does not pass the website block to filters, so repeat the URL
+# here for the og:url tag.
+extensions:
+  atelier:
+    site-url: https://example.org/my-site
+```
+
+**Notes / caveats:** Overrides merge key by key and the site wins (e.g. move search to the sidebar with website.search.location). List settings such as include-after-body scripts and filters stack with the extension's and cannot be removed; if a site needs to drop one, that default does not belong in a shared project type. Every site moves with the extension, so a bad default reaches all of them: each site keeps its own copy under _extensions/ (commit it), and upstream keeps sites current with a monthly Quarto Extensions Updater pull request that is reviewed before merge. atelier carries the author's own choices (en-GB locale, his footer); it is a model for writing your own project type (e.g. a branded team docs/report site), not necessarily one to adopt as-is. Upstream README pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.10.5`.

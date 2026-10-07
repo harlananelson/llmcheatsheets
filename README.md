@@ -217,7 +217,9 @@ python3 scripts/qk list
 python3 scripts/qk list --tag quarto
 python3 scripts/qk show research-paper-starter-pack
 python3 scripts/qk install research-paper-starter-pack /tmp/demo
+python3 scripts/qk install <extension-id> ./my-site --dry-run   # extension project types: prints the `quarto add` command
 python3 scripts/qk check
+python3 scripts/qk check --require-quarto   # also fail if local Quarto is missing/too old
 python3 scripts/qk update-docs
 ```
 
@@ -233,6 +235,8 @@ Load [`skills/quarto-kit-skill.md`](skills/quarto-kit-skill.md). It mirrors CLI 
 2. Ensure the `path` exists under `templates/`.
 3. Run `python3 scripts/qk update-docs` then `python3 scripts/qk check`.
 4. Open a PR. CI runs `scripts/qk check` and fails if `TEMPLATES.md` is out of sync.
+
+**Extension-provided project types.** A Quarto extension can contribute a whole project type (`project: type: <name>`) that lives upstream. Catalog it with `kind: extension-project-type` and no `path`; instead give `install` (exactly `quarto add owner/repo`, optional `@ref`), `project_type`, `min_quarto` (copy the extension's `quarto-required`), `source`, and optionally `base_type`, `docs`, `usage` (minimal `_quarto.yml`), and `notes` (caveats, update policy). The field reference is in the header of `catalog/templates.yaml`. `qk install <id> [project-dir]` runs the `quarto add` command in that directory; `qk check` compares your local Quarto with every `min_quarto` (warning by default, so CI without Quarto still passes; `--require-quarto` makes it fatal). Only catalog extensions that carry configuration/styling — never data or PHI.
 
 Optional: propose external candidates from [awesome-quarto](https://github.com/mcanouil/awesome-quarto) for review:
 
