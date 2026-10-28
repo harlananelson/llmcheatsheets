@@ -38,7 +38,12 @@ python3 scripts/qk show <id>
 
 Or read `catalog/templates.yaml` directly. Each entry has:
 
-- `id`, `title`, `description`, `path`, `tags`, `kind` (`file`|`directory`), `when_to_use`
+- `id`, `title`, `description`, `tags`, `kind`, `when_to_use`
+- `kind: file` | `directory` — a template stored in this repo; has `path`.
+- `kind: extension-project-type` — a Quarto project type contributed by an upstream extension; no `path`. Has `install` (`quarto add owner/repo[@ref]`), `project_type` (value for `project: type:`), `min_quarto`, `source`, and optionally `base_type`, `docs`, `usage` (minimal `_quarto.yml`), `notes` (caveats such as list settings that stack and cannot be removed, and the upstream update policy).
+- `kind: typst-package` — a Typst Universe package used via `#import` in a `.typ` file or a Quarto `format: typst` document; no `path`, nothing installed (Typst downloads it on first compile). Has `import` (exact `#import "@preview/name:X.Y.Z": ...` line), `version` (must match the import), `min_typst` (the package `typst.toml` `compiler` value), `source`, and optionally `docs`, `usage` (minimal Typst example), `notes`. `qk check` compares local Typst (`typst` or `$QK_TYPST`) with `min_typst`, warn-only unless `--require-typst`; `--skip-typst` turns it off.
+
+The field reference lives in the header comment of `catalog/templates.yaml`.
 
 If YAML and `catalog/TEMPLATES.md` disagree, trust YAML and run `python3 scripts/qk update-docs`, then fix via PR.
 
@@ -73,12 +78,25 @@ python3 scripts/qk install research-paper-starter-pack /tmp/demo --force   # ove
 
 Agent rule: if the destination exists, stop and ask before using `--force`.
 
+For `kind: extension-project-type`, `dest` is the Quarto project directory (default: cwd) and install runs the entry's `quarto add` command there (adds `_extensions/`, which should be committed). It refuses if Quarto is missing or older than `min_quarto` (`--force` overrides the version check only).
+
+```bash
+python3 scripts/qk install <extension-id> ./my-site --dry-run    # print the command only
+python3 scripts/qk install <extension-id> ./my-site               # run quarto add
+python3 scripts/qk install <extension-id> ./my-site --ref 1.2.3   # pin a release
+```
+
+Afterwards, set `project: type: <project_type>` in `_quarto.yml` using the entry's `usage` (`qk show <id>`), and pass on its `notes`.
+
 ### Check / update docs
 
 ```bash
-python3 scripts/qk check          # fails if TEMPLATES.md out of sync or paths missing
-python3 scripts/qk update-docs    # regenerate catalog/TEMPLATES.md from YAML
+python3 scripts/qk check                   # fails if TEMPLATES.md out of sync or paths/fields missing
+python3 scripts/qk check --require-quarto  # also fails if local Quarto is missing or < any min_quarto
+python3 scripts/qk update-docs             # regenerate catalog/TEMPLATES.md from YAML
 ```
+
+`check` always reports the local Quarto version against each entry's `min_quarto`; without `--require-quarto` a missing or old Quarto is only a warning (CI has no Quarto). Set `QK_QUARTO=/path/to/quarto` to point at a specific binary.
 
 ### Import candidates (draft only)
 
@@ -94,7 +112,7 @@ Never promote draft stubs into `templates.yaml` without an explicit human reques
 ## 4) Expand the catalog (PR workflow)
 
 1. Add or edit an entry in `catalog/templates.yaml`.
-2. Ensure `path` exists under `templates/` (file or directory).
+2. For `file`/`directory`, ensure `path` exists under `templates/`. For `typst-package`, copy `version` and `min_typst` (`compiler`) from the package's `typst.toml` on Typst Universe (github.com/typst/packages, `packages/preview/<name>/<version>/typst.toml`) and compile the `usage` example with Typst before proposing. For `extension-project-type`, fill `install`, `project_type`, `min_quarto` (from the extension's `_extension.yml` `quarto-required`), and `source` from the upstream repo — verify them there, don't guess.
 3. Run `python3 scripts/qk update-docs`.
 4. Run `python3 scripts/qk check`.
 5. Open a PR describing the template, tags, and when_to_use.
@@ -138,6 +156,7 @@ When expanding:
 | Inventory | `python3 scripts/qk list` |
 | Details | `python3 scripts/qk show <id>` |
 | Copy template | `python3 scripts/qk install <id> [dest] [--force]` |
-| Validate | `python3 scripts/qk check` |
+| Add extension project type | `python3 scripts/qk install <id> [project-dir] [--dry-run] [--ref REF]` |
+| Validate | `python3 scripts/qk check [--require-quarto]` |
 | Regen docs | `python3 scripts/qk update-docs` |
 | External drafts | `python3 scripts/qk import-candidates` |

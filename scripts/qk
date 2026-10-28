@@ -16,7 +16,9 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -31,6 +33,105 @@ DRAFTS_DIR = REPO_ROOT / "catalog" / "drafts"
 AWESOME_QUARTO_README = (
     "https://raw.githubusercontent.com/mcanouil/awesome-quarto/main/README.md"
 )
+
+# Entry kinds. file/directory are templates stored in this repo (need `path`);
+# extension-project-type is a Quarto project type contributed by an upstream
+# extension, installed with `quarto add owner/repo` (no `path`).
+LOCAL_KINDS = ("file", "directory")
+EXT_PROJECT_TYPE = "extension-project-type"
+# typst-package is a package on Typst Universe, used with `#import "@preview/name:ver"`
+# in a .typ file or a Quarto Typst-format document (no `path`, nothing installed).
+TYPST_PACKAGE = "typst-package"
+KINDS = LOCAL_KINDS + (EXT_PROJECT_TYPE, TYPST_PACKAGE)
+EXT_REQUIRED = ("install", "project_type", "min_quarto", "source")
+TYPST_REQUIRED = ("import", "version", "min_typst", "source")
+TYPST_IMPORT_RE = re.compile(
+    r'^#import "@(?P<ns>[a-z0-9-]+)/(?P<name>[a-z0-9-]+):(?P<ver>\d+\.\d+\.\d+)"(?::.*)?$'
+)
+QUARTO_ADD_RE = re.compile(
+    r"^quarto add (?P<repo>[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)(?:@(?P<ref>[A-Za-z0-9_.\-/]+))?$"
+)
+VERSION_RE = re.compile(r"\d+(?:\.\d+)*")
+
+
+# ---------------------------------------------------------------------------
+# Quarto detection / version comparison
+# ---------------------------------------------------------------------------
+
+def quarto_bin() -> str:
+    """Quarto executable: $QK_QUARTO if set, else `quarto` on PATH."""
+    return os.environ.get("QK_QUARTO") or "quarto"
+
+
+def parse_version(text: Any) -> tuple[int, ...] | None:
+    if text is None:
+        return None
+    m = VERSION_RE.search(str(text))
+    if not m:
+        return None
+    return tuple(int(x) for x in m.group(0).split("."))
+
+
+def version_ge(have: tuple[int, ...], need: tuple[int, ...]) -> bool:
+    width = max(len(have), len(need))
+    return have + (0,) * (width - len(have)) >= need + (0,) * (width - len(need))
+
+
+def detect_quarto() -> tuple[str | None, tuple[int, ...] | None, str]:
+    """Return (raw version string, parsed version, detail message)."""
+    exe = quarto_bin()
+    resolved = shutil.which(exe)
+    if not resolved:
+        return None, None, f"Quarto not found ({exe!r} is not on PATH; set QK_QUARTO to its path)"
+    try:
+        out = subprocess.run(
+            [resolved, "--version"], capture_output=True, text=True, timeout=60
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, None, f"could not run {resolved} --version: {exc}"
+    raw = (out.stdout or out.stderr or "").strip().splitlines()
+    raw_s = raw[0].strip() if raw else ""
+    parsed = parse_version(raw_s)
+    if out.returncode != 0 or parsed is None:
+        return raw_s or None, None, f"could not read a version from {resolved} --version (got {raw_s!r})"
+    return raw_s, parsed, f"Quarto {raw_s} ({resolved})"
+
+
+def typst_bin() -> str:
+    """Typst executable: $QK_TYPST if set, else `typst` on PATH."""
+    return os.environ.get("QK_TYPST") or "typst"
+
+
+def detect_typst() -> tuple[str | None, tuple[int, ...] | None, str]:
+    exe = typst_bin()
+    resolved = shutil.which(exe)
+    if not resolved:
+        return None, None, f"Typst not found ({exe!r} is not on PATH; set QK_TYPST to its path)"
+    try:
+        out = subprocess.run([resolved, "--version"], capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, None, f"could not run {resolved} --version: {exc}"
+    raw = (out.stdout or out.stderr or "").strip().splitlines()
+    raw_s = raw[0].strip() if raw else ""
+    parsed = parse_version(raw_s)
+    if out.returncode != 0 or parsed is None:
+        return raw_s or None, None, f"could not read a version from {resolved} --version (got {raw_s!r})"
+    return raw_s, parsed, f"{raw_s} ({resolved})"
+
+
+def quarto_add_parts(entry: dict[str, Any]) -> tuple[str, str | None] | None:
+    m = QUARTO_ADD_RE.match(str(entry.get("install") or "").strip())
+    if not m:
+        return None
+    return m.group("repo"), m.group("ref")
+
+
+def install_display(t: dict[str, Any]) -> str:
+    if t.get("kind") == EXT_PROJECT_TYPE:
+        return str(t.get("install") or "")
+    if t.get("kind") == TYPST_PACKAGE:
+        return str(t.get("import") or "")
+    return str(t.get("path") or "")
 
 
 # ---------------------------------------------------------------------------
@@ -195,7 +296,7 @@ def render_templates_md(data: dict[str, Any]) -> str:
         "Reviewable via pull request. Candidates from external lists belong under",
         "`catalog/drafts/` until a human promotes them into `templates.yaml`.",
         "",
-        "| ID | Title | Kind | Path | Tags |",
+        "| ID | Title | Kind | Path / install | Tags |",
         "|----|-------|------|------|------|",
     ]
     for t in data["templates"]:
@@ -205,14 +306,34 @@ def render_templates_md(data: dict[str, Any]) -> str:
         tag_s = ", ".join(f"`{x}`" for x in tags)
         lines.append(
             f"| `{t.get('id','')}` | {t.get('title','')} | {t.get('kind','')} | "
-            f"`{t.get('path','')}` | {tag_s} |"
+            f"`{install_display(t)}` | {tag_s} |"
         )
     lines.append("")
     for t in data["templates"]:
         lines.append(f"## `{t.get('id','')}` — {t.get('title','')}")
         lines.append("")
-        lines.append(f"- **Path:** `{t.get('path','')}`")
-        lines.append(f"- **Kind:** `{t.get('kind','')}`")
+        if t.get("kind") == EXT_PROJECT_TYPE:
+            lines.append(f"- **Install:** `{t.get('install','')}`")
+            lines.append(f"- **Kind:** `{t.get('kind','')}`")
+            pt = f"`{t.get('project_type','')}`"
+            if t.get("base_type"):
+                pt += f" (inherits `{t.get('base_type')}`)"
+            lines.append(f"- **Project type:** {pt}")
+            lines.append(f"- **Requires:** Quarto >= {t.get('min_quarto','')}")
+            lines.append(f"- **Source:** <{t.get('source','')}>")
+            if t.get("docs"):
+                lines.append(f"- **Docs:** <{t.get('docs')}>")
+        elif t.get("kind") == TYPST_PACKAGE:
+            lines.append(f"- **Import:** `{t.get('import','')}`")
+            lines.append(f"- **Kind:** `{t.get('kind','')}`")
+            lines.append(f"- **Version:** {t.get('version','')}")
+            lines.append(f"- **Requires:** Typst compiler >= {t.get('min_typst','')}")
+            lines.append(f"- **Source:** <{t.get('source','')}>")
+            if t.get("docs"):
+                lines.append(f"- **Docs:** <{t.get('docs')}>")
+        else:
+            lines.append(f"- **Path:** `{t.get('path','')}`")
+            lines.append(f"- **Kind:** `{t.get('kind','')}`")
         tags = t.get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
@@ -225,6 +346,19 @@ def render_templates_md(data: dict[str, Any]) -> str:
         wtu = (t.get("when_to_use") or "").strip()
         if wtu:
             lines.append(f"**When to use:** {wtu}")
+            lines.append("")
+        usage = (t.get("usage") or "").rstrip()
+        if usage:
+            is_typ = t.get("kind") == TYPST_PACKAGE
+            lines.append("Minimal Typst example:" if is_typ else "Minimal `_quarto.yml`:")
+            lines.append("")
+            lines.append("```typst" if is_typ else "```yaml")
+            lines.append(usage)
+            lines.append("```")
+            lines.append("")
+        notes = (t.get("notes") or "").strip()
+        if notes:
+            lines.append(f"**Notes / caveats:** {notes}")
             lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -264,7 +398,23 @@ def cmd_show(args: argparse.Namespace) -> int:
     print(f"id:          {t.get('id')}")
     print(f"title:       {t.get('title')}")
     print(f"kind:        {t.get('kind')}")
-    print(f"path:        {t.get('path')}")
+    if t.get("kind") == EXT_PROJECT_TYPE:
+        print(f"install:     {t.get('install')}")
+        base = f" (inherits {t.get('base_type')})" if t.get("base_type") else ""
+        print(f"project_type: {t.get('project_type')}{base}")
+        print(f"min_quarto:  {t.get('min_quarto')}")
+        print(f"source:      {t.get('source')}")
+        if t.get("docs"):
+            print(f"docs:        {t.get('docs')}")
+    elif t.get("kind") == TYPST_PACKAGE:
+        print(f"import:      {t.get('import')}")
+        print(f"version:     {t.get('version')}")
+        print(f"min_typst:   {t.get('min_typst')}")
+        print(f"source:      {t.get('source')}")
+        if t.get("docs"):
+            print(f"docs:        {t.get('docs')}")
+    else:
+        print(f"path:        {t.get('path')}")
     print(f"tags:        {', '.join(tags)}")
     print()
     print("description:")
@@ -272,6 +422,14 @@ def cmd_show(args: argparse.Namespace) -> int:
     print()
     print("when_to_use:")
     print((t.get("when_to_use") or "").strip())
+    if t.get("usage"):
+        print()
+        print("usage (Typst):" if t.get("kind") == TYPST_PACKAGE else "usage (_quarto.yml):")
+        print(str(t.get("usage")).rstrip())
+    if t.get("notes"):
+        print()
+        print("notes:")
+        print(str(t.get("notes")).strip())
     return 0
 
 
@@ -285,6 +443,19 @@ def cmd_install(args: argparse.Namespace) -> int:
     if not t:
         sys.stderr.write(f"error: unknown template id: {args.id}\n")
         return 1
+    if t.get("kind") == EXT_PROJECT_TYPE:
+        return install_extension_project_type(t, args)
+    if t.get("kind") == TYPST_PACKAGE:
+        print(f"'{args.id}' is a Typst Universe package; nothing to copy. Add to your .typ file:")
+        print(f"  {t.get('import')}")
+        print(f"Typst downloads it on first compile (needs Typst >= {t.get('min_typst')}).")
+        print(f"See: qk show {args.id}")
+        return 0
+    if args.dry_run:
+        rel = t.get("path") or ""
+        dest = Path(args.dest).expanduser().resolve() if args.dest else (Path.cwd() / Path(rel).name).resolve()
+        print(f"[dry-run] would copy {REPO_ROOT / rel} -> {dest}")
+        return 0
     rel = t.get("path")
     if not rel:
         sys.stderr.write(f"error: template {args.id} missing path\n")
@@ -331,6 +502,141 @@ def cmd_install(args: argparse.Namespace) -> int:
     return 0
 
 
+def install_extension_project_type(t: dict[str, Any], args: argparse.Namespace) -> int:
+    """Run `quarto add owner/repo` inside the target project directory."""
+    tid = t.get("id")
+    parts = quarto_add_parts(t)
+    if not parts:
+        sys.stderr.write(
+            f"error: {tid}: install must be `quarto add owner/repo[@ref]` (got {t.get('install')!r})\n"
+        )
+        return 1
+    repo, ref = parts
+    if args.ref:
+        ref = args.ref
+    target = f"{repo}@{ref}" if ref else repo
+    project_dir = Path(args.dest).expanduser().resolve() if args.dest else Path.cwd().resolve()
+    argv = [quarto_bin(), "add", target, "--no-prompt"]
+    pretty = f"(cd {shlex.quote(str(project_dir))} && quarto add {target} --no-prompt)"
+    need_s = str(t.get("min_quarto") or "")
+    need = parse_version(need_s)
+
+    if args.dry_run:
+        print(f"[dry-run] would run: {pretty}")
+        print(f"[dry-run] then set `project: type: {t.get('project_type')}` in _quarto.yml")
+        print(f"[dry-run] requires Quarto >= {need_s}")
+        return 0
+
+    raw, have, detail = detect_quarto()
+    if have is None:
+        sys.stderr.write(
+            f"error: {detail}. '{tid}' needs Quarto >= {need_s}. "
+            "Install Quarto (https://quarto.org/docs/get-started/) and retry, "
+            f"or run manually: quarto add {target}\n"
+        )
+        return 1
+    if need and not version_ge(have, need):
+        if not args.force:
+            sys.stderr.write(
+                f"error: {detail} is older than the {need_s} that '{tid}' requires. "
+                "Update Quarto (https://quarto.org/docs/download/) or pass --force to try anyway.\n"
+            )
+            return 1
+        sys.stderr.write(f"warning: {detail} < {need_s}; continuing because of --force\n")
+    if not project_dir.is_dir():
+        sys.stderr.write(f"error: project directory does not exist: {project_dir}\n")
+        return 1
+    ext_dir = project_dir / "_extensions"
+    print(f"Running: {pretty}", flush=True)
+    rc = subprocess.run(argv, cwd=str(project_dir)).returncode
+    if rc != 0:
+        sys.stderr.write(f"error: quarto add exited with status {rc}\n")
+        return rc
+    print(f"Installed extension '{repo}' into {ext_dir} (commit _extensions/).")
+    print(f"Next: set `project: type: {t.get('project_type')}` in {project_dir / '_quarto.yml'}"
+          f" (see: qk show {tid}).")
+    return 0
+
+
+def check_quarto_versions(templates: list[dict[str, Any]], require: bool) -> list[str]:
+    """Compare local Quarto with each entry's min_quarto.
+
+    Returns errors when `require` is set; otherwise prints warnings and returns [].
+    """
+    needs = [
+        (t.get("id"), str(t.get("min_quarto")), parse_version(t.get("min_quarto")))
+        for t in templates
+        if t.get("min_quarto") not in (None, "")
+    ]
+    needs = [n for n in needs if n[2] is not None]
+    if not needs:
+        return []
+    raw, have, detail = detect_quarto()
+    problems: list[str] = []
+    if have is None:
+        ids = ", ".join(f"{i} (>= {s})" for i, s, _ in needs)
+        problems.append(f"{detail}; entries needing Quarto: {ids}")
+    else:
+        print(f"quarto: {detail}")
+        for tid, need_s, need in needs:
+            if version_ge(have, need):
+                print(f"  ok   {tid}: needs >= {need_s}")
+            else:
+                print(f"  OLD  {tid}: needs >= {need_s}")
+                problems.append(
+                    f"{tid}: needs Quarto >= {need_s} but found {raw}; "
+                    "update Quarto (https://quarto.org/docs/download/)"
+                )
+    sys.stdout.flush()
+    if require:
+        return problems
+    for msg in problems:
+        sys.stderr.write(f"warning: {msg}\n")
+    if problems:
+        sys.stderr.write(
+            "warning: Quarto version problems do not fail `qk check` unless --require-quarto is set\n"
+        )
+    return []
+
+
+def check_typst_versions(templates: list[dict[str, Any]], require: bool) -> list[str]:
+    """Compare local Typst with each typst-package's min_typst (warn-only unless require)."""
+    needs = [
+        (t.get("id"), str(t.get("min_typst")), parse_version(t.get("min_typst")))
+        for t in templates
+        if t.get("kind") == TYPST_PACKAGE and t.get("min_typst") not in (None, "")
+    ]
+    needs = [n for n in needs if n[2] is not None]
+    if not needs:
+        return []
+    raw, have, detail = detect_typst()
+    problems: list[str] = []
+    if have is None:
+        ids = ", ".join(f"{i} (>= {s})" for i, s, _ in needs)
+        problems.append(f"{detail}; entries needing Typst: {ids}")
+    else:
+        print(f"typst: {detail}")
+        for tid, need_s, need in needs:
+            if version_ge(have, need):
+                print(f"  ok   {tid}: needs >= {need_s}")
+            else:
+                print(f"  OLD  {tid}: needs >= {need_s}")
+                problems.append(
+                    f"{tid}: needs Typst >= {need_s} but found {raw}; "
+                    "update Typst (https://github.com/typst/typst/releases)"
+                )
+    sys.stdout.flush()
+    if require:
+        return problems
+    for msg in problems:
+        sys.stderr.write(f"warning: {msg}\n")
+    if problems:
+        sys.stderr.write(
+            "warning: Typst version problems do not fail `qk check` unless --require-typst is set\n"
+        )
+    return []
+
+
 def cmd_update_docs(_: argparse.Namespace) -> int:
     data = require_catalog()
     CATALOG_MD.parent.mkdir(parents=True, exist_ok=True)
@@ -339,7 +645,7 @@ def cmd_update_docs(_: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_check(_: argparse.Namespace) -> int:
+def cmd_check(args: argparse.Namespace) -> int:
     data = require_catalog()
     errors: list[str] = []
     ids: set[str] = set()
@@ -351,12 +657,51 @@ def cmd_check(_: argparse.Namespace) -> int:
         if tid in ids:
             errors.append(f"duplicate id: {tid}")
         ids.add(tid)
-        for req in ("title", "description", "path", "tags", "kind", "when_to_use"):
+        kind = t.get("kind")
+        common = ("title", "description", "tags", "kind", "when_to_use")
+        required = common + (
+            EXT_REQUIRED if kind == EXT_PROJECT_TYPE
+            else TYPST_REQUIRED if kind == TYPST_PACKAGE
+            else ("path",)
+        )
+        for req in required:
             if req not in t or t[req] in (None, ""):
                 errors.append(f"{tid}: missing {req}")
-        kind = t.get("kind")
-        if kind not in ("file", "directory"):
-            errors.append(f"{tid}: kind must be file|directory (got {kind!r})")
+        if kind not in KINDS:
+            errors.append(f"{tid}: kind must be {'|'.join(KINDS)} (got {kind!r})")
+        if kind == TYPST_PACKAGE:
+            m = TYPST_IMPORT_RE.match(str(t.get("import") or "").strip())
+            if t.get("import") and not m:
+                errors.append(
+                    f'{tid}: import must look like `#import "@preview/name:X.Y.Z": ...` '
+                    f"(got {t.get('import')!r})"
+                )
+            elif m and t.get("version") not in (None, "") and m.group("ver") != str(t.get("version")):
+                errors.append(f"{tid}: import pins {m.group('ver')} but version is {t.get('version')}")
+            for vkey in ("version", "min_typst"):
+                if t.get(vkey) not in (None, "") and parse_version(t.get(vkey)) is None:
+                    errors.append(f"{tid}: {vkey} is not a version: {t.get(vkey)!r}")
+            for url_key in ("source", "docs"):
+                val = t.get(url_key)
+                if val and not str(val).startswith(("https://", "http://")):
+                    errors.append(f"{tid}: {url_key} must be a URL (got {val!r})")
+            if t.get("path"):
+                errors.append(f"{tid}: kind={TYPST_PACKAGE} must not set path")
+            continue
+        if kind == EXT_PROJECT_TYPE:
+            if t.get("install") and not quarto_add_parts(t):
+                errors.append(
+                    f"{tid}: install must be `quarto add owner/repo[@ref]` (got {t.get('install')!r})"
+                )
+            if t.get("min_quarto") not in (None, "") and parse_version(t.get("min_quarto")) is None:
+                errors.append(f"{tid}: min_quarto is not a version: {t.get('min_quarto')!r}")
+            for url_key in ("source", "docs"):
+                val = t.get(url_key)
+                if val and not str(val).startswith(("https://", "http://")):
+                    errors.append(f"{tid}: {url_key} must be a URL (got {val!r})")
+            if t.get("path"):
+                errors.append(f"{tid}: kind={EXT_PROJECT_TYPE} must not set path")
+            continue
         rel = t.get("path")
         if rel:
             src = REPO_ROOT / rel
@@ -377,6 +722,11 @@ def cmd_check(_: argparse.Namespace) -> int:
                 "catalog/TEMPLATES.md out of sync with templates.yaml; "
                 "run: python3 scripts/qk update-docs"
             )
+
+    if not getattr(args, "skip_quarto", False):
+        errors.extend(check_quarto_versions(data["templates"], getattr(args, "require_quarto", False)))
+    if not getattr(args, "skip_typst", False):
+        errors.extend(check_typst_versions(data["templates"], getattr(args, "require_typst", False)))
 
     if errors:
         for e in errors:
@@ -484,22 +834,61 @@ def build_parser() -> argparse.ArgumentParser:
     p_show.add_argument("id")
     p_show.set_defaults(func=cmd_show)
 
-    p_install = sub.add_parser("install", help="Copy a template to a destination")
+    p_install = sub.add_parser(
+        "install",
+        help="Copy a template to a destination, or `quarto add` an extension project type",
+    )
     p_install.add_argument("id")
     p_install.add_argument(
         "dest",
         nargs="?",
         default=None,
-        help="Destination path (default: ./<basename> under cwd)",
+        help=(
+            "Destination path (default: ./<basename> under cwd). For "
+            "extension-project-type entries: the Quarto project directory (default: cwd)"
+        ),
     )
     p_install.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite existing destination",
+        help="Overwrite existing destination; for extensions, proceed even if Quarto is too old",
+    )
+    p_install.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would happen without copying or running quarto",
+    )
+    p_install.add_argument(
+        "--ref",
+        default=None,
+        help="Extensions only: pin a release/tag/branch (quarto add owner/repo@REF)",
     )
     p_install.set_defaults(func=cmd_install)
 
-    p_check = sub.add_parser("check", help="Validate catalog and TEMPLATES.md sync")
+    p_check = sub.add_parser(
+        "check",
+        help="Validate catalog and TEMPLATES.md sync; compare local Quarto/Typst with min_quarto/min_typst",
+    )
+    p_check.add_argument(
+        "--require-quarto",
+        action="store_true",
+        help="Fail (not just warn) if Quarto is missing or older than any entry's min_quarto",
+    )
+    p_check.add_argument(
+        "--skip-quarto",
+        action="store_true",
+        help="Skip the local Quarto version check",
+    )
+    p_check.add_argument(
+        "--require-typst",
+        action="store_true",
+        help="Fail (not just warn) if Typst is missing or older than any typst-package's min_typst",
+    )
+    p_check.add_argument(
+        "--skip-typst",
+        action="store_true",
+        help="Skip the local Typst version check (QK_TYPST selects the binary)",
+    )
     p_check.set_defaults(func=cmd_check)
 
     p_upd = sub.add_parser("update-docs", help="Regenerate catalog/TEMPLATES.md from YAML")
