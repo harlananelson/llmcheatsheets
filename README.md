@@ -238,6 +238,8 @@ Load [`skills/quarto-kit-skill.md`](skills/quarto-kit-skill.md). It mirrors CLI 
 
 **Extension-provided project types.** A Quarto extension can contribute a whole project type (`project: type: <name>`) that lives upstream. Catalog it with `kind: extension-project-type` and no `path`; instead give `install` (exactly `quarto add owner/repo`, optional `@ref`), `project_type`, `min_quarto` (copy the extension's `quarto-required`), `source`, and optionally `base_type`, `docs`, `usage` (minimal `_quarto.yml`), and `notes` (caveats, update policy). The field reference is in the header of `catalog/templates.yaml`. `qk install <id> [project-dir]` runs the `quarto add` command in that directory; `qk check` compares your local Quarto with every `min_quarto` (warning by default, so CI without Quarto still passes; `--require-quarto` makes it fatal). Only catalog extensions that carry configuration/styling — never data or PHI.
 
+**Typst packages.** Typst Universe packages (e.g. `keisen` display tables) are catalogued with `kind: typst-package` and no `path`: give `import` (the exact `#import "@preview/name:X.Y.Z": ...` line), `version` (must match the import), `min_typst` (the package `typst.toml` `compiler`), `source`, and optionally `docs`, `usage` (minimal Typst example), `notes`. Nothing is installed — Typst fetches the package on first compile; `qk install <id>` just prints the import line. `qk check` compares local Typst (`typst` on PATH or `QK_TYPST`) with every `min_typst`, warn-only by default (`--require-typst` makes it fatal, `--skip-typst` skips it).
+
 Optional: propose external candidates from [awesome-quarto](https://github.com/mcanouil/awesome-quarto) for review:
 
 ```bash

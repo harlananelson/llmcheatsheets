@@ -27,6 +27,20 @@
 #     `qk install <id> [project-dir]` runs the `install` command in project-dir
 #     (`--dry-run` prints it). `qk check` compares the local Quarto version
 #     with every min_quarto.
+#
+#   kind: typst-package
+#     A package on Typst Universe (https://typst.app/universe), used from a .typ
+#     file or a Quarto `format: typst` document via #import; Typst downloads it
+#     on first compile, so nothing is vendored. No `path`. Fields:
+#       import:    required, exact line, e.g. `#import "@preview/name:X.Y.Z": *`
+#       version:   required, must equal the version pinned in `import`
+#       min_typst: required, the package's typst.toml `compiler` value
+#       source:    required, upstream repository URL
+#       docs:      optional, documentation / announcement URL
+#       usage:     optional, minimal Typst example (literal block, |)
+#       notes:     optional, caveats and update policy
+#     `qk check` validates the fields and compares the local Typst (`typst` or
+#     $QK_TYPST) with every min_typst (warn-only unless --require-typst).
 
 version: 1
 templates:
@@ -149,3 +163,53 @@ templates:
       _quarto.yml, or as the reference implementation when building your own
       extension-provided project type to share one configuration across many
       repos.
+
+  - id: keisen
+    title: Keisen display tables for Typst (@preview/keisen)
+    description: >
+      Typst package by Mickaël Canouil that implements the display-table
+      grammar of gt (R) and great_tables (Python): describe the header, stub
+      and row groups, column labels and spanners, formats (integer, currency,
+      percent with decimal arithmetic), summary rows, footnotes, and source
+      notes; Keisen lays out the table. Row groups that cross a page break
+      reprint their label. Works in plain Typst and in Quarto documents
+      rendered with `format: typst`.
+    tags: [typst, package, tables, reporting, pdf]
+    kind: typst-package
+    import: '#import "@preview/keisen:0.1.0": *'
+    version: 0.1.0
+    min_typst: 0.15.0
+    source: https://github.com/mcanouil/keisen
+    docs: https://m.canouil.dev/keisen/
+    usage: |
+      #import "@preview/keisen:0.1.0": *
+
+      #let sales = (
+        (region: "North", product: "A", units: 120, revenue: 2400, margin: 0.12),
+        (region: "North", product: "B", units: 80, revenue: 1900, margin: 0.03),
+        (region: "South", product: "A", units: 95, revenue: 2100, margin: 0.08),
+      )
+
+      #display-table(
+        sales,
+        table-header(title: [Mock sales]),
+        table-stub(rowname: "product", group: "region", label: [Product]),
+        format-integer("units"),
+        format-currency("revenue", currency: "USD", decimals: 0),
+        format-percent("margin", decimals: 1),
+        table-source-note([Mock data only.]),
+        theme: theme-booktabs(),
+      )
+    notes: >
+      Version 0.1.0 (announced 2026-10-22,
+      https://mickael.canouil.fr/posts/2026-10-22-keisen-0-1/); upstream says
+      the API is still settling, so pin the version and re-check on upgrade.
+      min_typst is the `compiler` field of the package's typst.toml. Default
+      currency formatting uses a thin-space thousands separator ("$2 400").
+      An LLM-readable copy of the docs is at https://m.canouil.dev/keisen/llms.txt.
+      Tables are built from data in the document: use mock or de-identified
+      data only, never PHI.
+    when_to_use: >
+      Publication-quality tables (clinical summaries, regression tables,
+      grouped reports) in Typst PDFs or Quarto Typst output, including
+      reMarkable-friendly layouts, without hand-writing #table cells.

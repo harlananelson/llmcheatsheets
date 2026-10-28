@@ -15,6 +15,7 @@ Reviewable via pull request. Candidates from external lists belong under
 | `ontology-scaffold` | Ontology scaffold | directory | `templates/ontology-scaffold` | `claude-code`, `ontology`, `scaffold`, `directory` |
 | `research-paper-starter-pack` | Research paper starter pack | directory | `templates/research-paper-starter-pack` | `quarto`, `manuscript`, `research`, `directory` |
 | `atelier` | Atelier documentation-website project type (mcanouil/quarto-atelier) | extension-project-type | `quarto add mcanouil/quarto-atelier` | `quarto`, `extension`, `project-type`, `website`, `documentation`, `brand` |
+| `keisen` | Keisen display tables for Typst (@preview/keisen) | typst-package | `#import "@preview/keisen:0.1.0": *` | `typst`, `package`, `tables`, `reporting`, `pdf` |
 
 ## `claude-md-global` — Global CLAUDE.md
 
@@ -103,3 +104,42 @@ extensions:
 ```
 
 **Notes / caveats:** Overrides merge key by key and the site wins (e.g. move search to the sidebar with website.search.location). List settings such as include-after-body scripts and filters stack with the extension's and cannot be removed; if a site needs to drop one, that default does not belong in a shared project type. Every site moves with the extension, so a bad default reaches all of them: each site keeps its own copy under _extensions/ (commit it), and upstream keeps sites current with a monthly Quarto Extensions Updater pull request that is reviewed before merge. atelier carries the author's own choices (en-GB locale, his footer); it is a model for writing your own project type (e.g. a branded team docs/report site), not necessarily one to adopt as-is. Upstream README pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.10.5`.
+
+## `keisen` — Keisen display tables for Typst (@preview/keisen)
+
+- **Import:** `#import "@preview/keisen:0.1.0": *`
+- **Kind:** `typst-package`
+- **Version:** 0.1.0
+- **Requires:** Typst compiler >= 0.15.0
+- **Source:** <https://github.com/mcanouil/keisen>
+- **Docs:** <https://m.canouil.dev/keisen/>
+- **Tags:** `typst`, `package`, `tables`, `reporting`, `pdf`
+
+Typst package by Mickaël Canouil that implements the display-table grammar of gt (R) and great_tables (Python): describe the header, stub and row groups, column labels and spanners, formats (integer, currency, percent with decimal arithmetic), summary rows, footnotes, and source notes; Keisen lays out the table. Row groups that cross a page break reprint their label. Works in plain Typst and in Quarto documents rendered with `format: typst`.
+
+**When to use:** Publication-quality tables (clinical summaries, regression tables, grouped reports) in Typst PDFs or Quarto Typst output, including reMarkable-friendly layouts, without hand-writing #table cells.
+
+Minimal Typst example:
+
+```typst
+#import "@preview/keisen:0.1.0": *
+
+#let sales = (
+  (region: "North", product: "A", units: 120, revenue: 2400, margin: 0.12),
+  (region: "North", product: "B", units: 80, revenue: 1900, margin: 0.03),
+  (region: "South", product: "A", units: 95, revenue: 2100, margin: 0.08),
+)
+
+#display-table(
+  sales,
+  table-header(title: [Mock sales]),
+  table-stub(rowname: "product", group: "region", label: [Product]),
+  format-integer("units"),
+  format-currency("revenue", currency: "USD", decimals: 0),
+  format-percent("margin", decimals: 1),
+  table-source-note([Mock data only.]),
+  theme: theme-booktabs(),
+)
+```
+
+**Notes / caveats:** Version 0.1.0 (announced 2026-10-22, https://mickael.canouil.fr/posts/2026-10-22-keisen-0-1/); upstream says the API is still settling, so pin the version and re-check on upgrade. min_typst is the `compiler` field of the package's typst.toml. Default currency formatting uses a thin-space thousands separator ("$2 400"). An LLM-readable copy of the docs is at https://m.canouil.dev/keisen/llms.txt. Tables are built from data in the document: use mock or de-identified data only, never PHI.
