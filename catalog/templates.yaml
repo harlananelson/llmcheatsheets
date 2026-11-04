@@ -124,7 +124,7 @@ templates:
     install: quarto add mcanouil/quarto-atelier
     project_type: atelier
     base_type: website
-    min_quarto: 1.9.36
+    min_quarto: 1.9.38
     source: https://github.com/mcanouil/quarto-atelier
     docs: https://mickael.canouil.fr/posts/2026-10-05-quarto-atelier-project-type/
     usage: |
@@ -157,7 +157,12 @@ templates:
       atelier carries the author's own choices (en-GB locale, his footer); it
       is a model for writing your own project type (e.g. a branded team
       docs/report site), not necessarily one to adopt as-is. Upstream README
-      pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.10.5`.
+      pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.11.0`.
+      Since 0.11.0 (2026-10-29) atelier needs Quarto >= 1.9.38 and bundles the
+      iconify, gitlink, code-window, toc-depth and collapse-output extensions;
+      a site that also has its own copy of any of those must remove it and its
+      `filters` entry, or both copies run. 0.11.0 also adds opt-in landing-page
+      classes (hero, feature rows, link-card grid).
     when_to_use: >
       Standing up a documentation website with consistent chrome from a short
       _quarto.yml, or as the reference implementation when building your own
@@ -176,13 +181,13 @@ templates:
       rendered with `format: typst`.
     tags: [typst, package, tables, reporting, pdf]
     kind: typst-package
-    import: '#import "@preview/keisen:0.1.0": *'
-    version: 0.1.0
+    import: '#import "@preview/keisen:0.2.0": *'
+    version: 0.2.0
     min_typst: 0.15.0
     source: https://github.com/mcanouil/keisen
     docs: https://m.canouil.dev/keisen/
     usage: |
-      #import "@preview/keisen:0.1.0": *
+      #import "@preview/keisen:0.2.0": *
 
       #let sales = (
         (region: "North", product: "A", units: 120, revenue: 2400, margin: 0.12),
@@ -201,8 +206,12 @@ templates:
         theme: theme-booktabs(),
       )
     notes: >
-      Version 0.1.0 (announced 2026-10-22,
-      https://mickael.canouil.fr/posts/2026-10-22-keisen-0-1/); upstream says
+      Pinned to 0.2.0 (2026-10-30); 0.1.0 was announced 2026-10-22
+      (https://mickael.canouil.fr/posts/2026-10-22-keisen-0-1/). 0.2.0 breaks
+      nanoplot renderers (now called as functions, e.g. `nanoplot-line()`, and
+      custom renderers are dictionaries with draw/readings/axis), adds
+      `nanoplot-value-bar` and nanoplot axis rows, and keeps decimal alignment
+      on bold or styled cells; the usage example above is unaffected. Upstream says
       the API is still settling, so pin the version and re-check on upgrade.
       min_typst is the `compiler` field of the package's typst.toml. Default
       currency formatting uses a thin-space thousands separator ("$2 400").
