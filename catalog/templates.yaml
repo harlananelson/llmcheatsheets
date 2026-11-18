@@ -124,7 +124,7 @@ templates:
     install: quarto add mcanouil/quarto-atelier
     project_type: atelier
     base_type: website
-    min_quarto: 1.9.38
+    min_quarto: 1.12.1
     source: https://github.com/mcanouil/quarto-atelier
     docs: https://mickael.canouil.fr/posts/2026-10-05-quarto-atelier-project-type/
     usage: |
@@ -157,12 +157,25 @@ templates:
       atelier carries the author's own choices (en-GB locale, his footer); it
       is a model for writing your own project type (e.g. a branded team
       docs/report site), not necessarily one to adopt as-is. Upstream README
-      pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.11.0`.
+      pins a release, e.g. `quarto add mcanouil/quarto-atelier@0.12.0`.
       Since 0.11.0 (2026-10-29) atelier needs Quarto >= 1.9.38 and bundles the
       iconify, gitlink, code-window, toc-depth and collapse-output extensions;
       a site that also has its own copy of any of those must remove it and its
       `filters` entry, or both copies run. 0.11.0 also adds opt-in landing-page
       classes (hero, feature rows, link-card grid).
+      0.12.0 (2026-11-16) needs Quarto >= 1.12.1, which is a pre-release
+      until Quarto 1.12 ships; on stable Quarto 1.11.x pin
+      `quarto add mcanouil/quarto-atelier@0.11.0`. 0.12.0 also bundles
+      div-reuse, highlight-text, offset-headings, preview-colour, prism,
+      remember and veil (remove any own copy and its `filters` entry), derives
+      surfaces and accents from _brand.yml held to WCAG AA, adds
+      `atelier-preset` (default, quarto, terminal) in _brand.yml, ships English
+      and French interface text, and adds a workshop mode
+      (`extensions: atelier: mode: workshop`, per-page `duration`, module
+      progress, session timer, `.objectives`/`.exercise`/`.solution` divs) with
+      two starter templates: `quarto use template
+      mcanouil/quarto-atelier/templates/<name>` (documentation with navbar, or
+      sidebar-only workshop).
     when_to_use: >
       Standing up a documentation website with consistent chrome from a short
       _quarto.yml, or as the reference implementation when building your own
